@@ -3,6 +3,8 @@ from os.path import isfile, join
 import re
 from tqdm import tqdm
 import collections
+import operator
+
 
 def tokenize_text(text):
 	words = re.sub("[^\w]", " ",  text).split()
@@ -84,7 +86,7 @@ def generate_embeddings_generic(min_grams, max_grams, train_pos_data_path, train
 
 	train_files = [f for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
 
-	for train_file in tqdm(train_files[0:1]):
+	for train_file in tqdm(train_files[:2]):
 		file_full_path = train_pos_data_path+"/"+train_file
 
 		with open(file_full_path) as f:
@@ -96,28 +98,40 @@ def generate_embeddings_generic(min_grams, max_grams, train_pos_data_path, train
 			unigrams.extend(diff_grams[0])
 			bigrams.extend(diff_grams[1])
 
-	#print(collections.Counter(bigrams).most_common())
+	vocab = []
+	unigrams = dict(collections.Counter(unigrams))
+
+	# Filter the unigrams, so that only the ones that occur more than 4 times are left in the vocabulary
+	for (key,value) in unigrams.items():
+		# Check if an item occurs more than 4 times
+		if value >= 4:
+			vocab.append(key)
 
 
-	#vocab = print(collections.Counter(all_words).most_common())
+	# Take as many bigrams as many unigrams are there in the vocabulary 
+	# NOTE THAT THIS IS NOT EXPLICITLY MENTIONED IN THE ARTICLE
+	len_all_unigrams =len(vocab)
 
-	#print(set(all_words))
-	# # Remove all words that repeat
-	# vocab = sorted(list(set(all_words)))
+	bigrams = dict(collections.Counter(bigrams))
+	sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
 	
-	# print("There are {0} document with {1} unique unigrams and bigrams".format(len(tokenized_docs), len(vocab)))
+	for i, item in enumerate(sorted_bigrams):
+		vocab.append(item[0])
 
-	# bag_vectors = []
+		if i > len_all_unigrams:
+			break
 
-	# for doc in tqdm(tokenized_docs):
-	# 	bag = [0] * len(vocab)
+	bag_vectors = []
 
-	# 	for w in doc:
-	# 		for i, word in enumerate(vocab):
-	# 			if word == w:
-	# 				bag[i] += 1
+	for doc in tqdm(tokenized_docs):
+		bag = [0] * len(vocab)
 
-	# 	bag_vectors.append(bag)
+		for w in doc:
+			for i, word in enumerate(vocab):
+				if word == w:
+					bag[i] += 1
 
-	# print(bag_vectors[0])
+		bag_vectors.append(bag)
+
+
 
