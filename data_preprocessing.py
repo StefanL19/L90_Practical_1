@@ -78,18 +78,18 @@ def generate_n_grams(min_grams, max_grams, tokens):
 	return tokens, diff_grams
 
 
-def generate_embeddings_generic(min_grams, max_grams, train_pos_data_path, train_neg_data_path):
+def generate_embeddings_generic(min_grams, max_grams, train_files):
 	#all_words = []
 	tokenized_docs = []
 	unigrams = []
 	bigrams = []
 
-	train_files = [f for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
+	print("All positive files are: ", len(train_files))
 
-	for train_file in tqdm(train_files[:2]):
-		file_full_path = train_pos_data_path+"/"+train_file
+	for train_file in tqdm(train_files):
+		# file_full_path = train_pos_data_path+"/"+train_file
 
-		with open(file_full_path) as f:
+		with open(train_file) as f:
 			text = f.read()
 			tokenized_text = tokenize_text(text)
 			tokens, diff_grams = generate_n_grams(min_grams, max_grams, tokenized_text)
@@ -120,18 +120,21 @@ def generate_embeddings_generic(min_grams, max_grams, train_pos_data_path, train
 
 		if i > len_all_unigrams:
 			break
+	vocab = sorted(vocab)
 
-	bag_vectors = []
+	return vocab, tokenized_docs
+	# bag_vectors = []
 
-	for doc in tqdm(tokenized_docs):
-		bag = [0] * len(vocab)
+	# for doc in tqdm(tokenized_docs):
+	# 	bag = [0] * len(vocab)
 
-		for w in doc:
-			for i, word in enumerate(vocab):
-				if word == w:
-					bag[i] += 1
+	# 	for w in doc:
+	# 		for i, word in enumerate(vocab):
+	# 			if word == w:
+	# 				# If we need also the count, it can be bag[i] += 1 
+	# 				bag[i] = 1
 
-		bag_vectors.append(bag)
+	# 	bag_vectors.append(bag)
 
-
+	# print(bag_vectors[0])
 
