@@ -84,7 +84,7 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 	unigrams = []
 	bigrams = []
 
-	print("All positive files are: ", len(train_files))
+	#print("All positive files are: ", len(train_files))
 
 	for train_file in tqdm(train_files):
 		# file_full_path = train_pos_data_path+"/"+train_file
