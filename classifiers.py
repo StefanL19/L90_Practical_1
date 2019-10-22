@@ -8,17 +8,15 @@ def train_multinomial_NB(train_pos_data_path, train_neg_data_path,laplace_smooth
 	train_files_pos = [join(train_pos_data_path, f) for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
 	train_files_neg = [join(train_neg_data_path, f) for f in listdir(train_neg_data_path) if isfile(join(train_neg_data_path, f))]
 
-	train_files_pos = train_files_pos[:100]
-	train_files_neg = train_files_neg[:100]
-
-	print(len(train_files_pos))
-	print(len(train_files_neg))
+	print("The count of all positive files is: ", len(train_files_pos))
+	print("The count of all negative files is: ", len(train_files_neg))
 
 	prior_pos = len(train_files_pos)/(len(train_files_pos) + len(train_files_neg))
 	prior_neg = len(train_files_neg)/(len(train_files_pos)+len(train_files_neg))
 
 	train_files = train_files_pos + train_files_neg
-
+	
+	# Generating the embeddings
 	vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(1, 2, train_files)
 
 	pos_docs_tokes = docs_tokenized[:len(train_files_pos)]
@@ -29,9 +27,17 @@ def train_multinomial_NB(train_pos_data_path, train_neg_data_path,laplace_smooth
 
 	print("Started iterating positive documents")
 	for doc in tqdm(pos_docs_tokes):
+
+		# For each word in the document
 		for w in doc:
+
+			# Check if it is in the vocabulary
 			for i, word in enumerate(vocab):
+
+				# If it is in the vocabular
 				if word == w:
+
+					# Increment the number of its occurences in the positive corpora by 1
 					vocab_pos_freq[i] += 1
 
 	count_all_pos = sum(vocab_pos_freq)

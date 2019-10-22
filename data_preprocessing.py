@@ -18,7 +18,7 @@ def generate_embeddings(train_pos_data_path, train_neg_data_path):
 
 	train_files = [f for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
 	
-	for train_file in tqdm(train_files[:1000]):
+	for train_file in tqdm(train_files):
 		file_full_path = train_pos_data_path+"/"+train_file
 		with open(file_full_path) as f:
 			text = f.read()
@@ -52,25 +52,35 @@ def generate_n_grams(min_grams, max_grams, tokens):
 
 	diff_grams = []
 
+	# Check from where to start
 	if max_grams != 1:
 		if min_grams == 1:
+
+			# If the unigrams are included in the requested embeddings include them in the list
 			diff_grams.append(old_tokens)
 
 			min_grams += 1
 
 		else:
+			# Else skip unigrams
 			tokens = []
 
 		orig_tokens_len = len(old_tokens)
 
 		for n in range(min_grams, min(max_grams + 1, orig_tokens_len+1)):
+			
 			#Create a list that will store the concrete values of the n_gram calculation
 			n_grams = []
 
 			for i in range(orig_tokens_len - n + 1):
+
 				# Append the concrete n_gram value to the embedding of the document
 				n_gram = " ".join(old_tokens[i:i+n])
+
+				# Append the n-gram embeddings to the general embeddings of the document
 				tokens.append(n_gram)
+
+				# Append the n-grams to a different list, so each n-grams can be filtered separately
 				n_grams.append(n_gram)
 
 			diff_grams.append(n_grams)
@@ -79,20 +89,21 @@ def generate_n_grams(min_grams, max_grams, tokens):
 
 
 def generate_embeddings_generic(min_grams, max_grams, train_files):
-	#all_words = []
 	tokenized_docs = []
 	unigrams = []
 	bigrams = []
 
-	#print("All positive files are: ", len(train_files))
+	print("All files are: ", len(train_files))
 
 	for train_file in tqdm(train_files):
-		# file_full_path = train_pos_data_path+"/"+train_file
-
 		with open(train_file) as f:
 			text = f.read()
+
+			# Tokenize and preprocess the document
 			tokenized_text = tokenize_text(text)
+
 			tokens, diff_grams = generate_n_grams(min_grams, max_grams, tokenized_text)
+
 			tokenized_docs.append(tokens)
 
 			unigrams.extend(diff_grams[0])
@@ -123,6 +134,7 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 	vocab = sorted(vocab)
 
 	return vocab, tokenized_docs
+
 	# bag_vectors = []
 
 	# for doc in tqdm(tokenized_docs):
