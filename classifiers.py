@@ -4,7 +4,6 @@ from os.path import isfile, join
 from tqdm import tqdm
 import numpy as np
 import multiprocessing 
-#from multiprocessing import Pool, Manager
 from functools import partial
 
 def count_word_occurences(len_vocab, q, vocabulary, doc):
@@ -41,7 +40,6 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 
 	vocab_length = len(vocab)
 
-	print("Started iterating positive documents")
 	m = multiprocessing.Manager()
 	pos_list = m.list()
 	neg_list = m.list()
@@ -111,27 +109,5 @@ def apply_multinomial_NB(doc, vocab, prior_pos, prior_neg, vocab_pos_freq, vocab
 
 	print(final_pos)
 	print(final_neg)
-
-
-	#print(rel_scores_neg)
-
-	# print(score_pos)
-	# # print(np.where(rel_scores_pos != 0.0))
-	# # print(vocab[177])
-	# print(np.sum(rel_scores_pos))
-	# rel_scores_pos = np.sum(np.log(rel_scores_pos))
-	# rel_scores_neg = np.sum(np.log(rel_scores_neg))
-
-	# final_pos_score = score_pos + rel_scores_pos
-
-	# final_neg_score = score_neg + rel_scores_neg
-
-	# print(final_pos_score)
-	# print(final_neg_score)
-
-
-
-
-
 
 

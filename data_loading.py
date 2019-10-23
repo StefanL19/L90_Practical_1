@@ -39,10 +39,10 @@ def load_data(train_pos_data_path, train_neg_data_path):
 	all_neg_docs = collect_train_data(train_files_neg)
 
 	# Split train and test data
-	pos_train = all_pos_docs[0:899]
+	pos_train = all_pos_docs[0:500]
 	pos_test = all_pos_docs[899:]
 
-	neg_train = all_neg_docs[0:899]
+	neg_train = all_neg_docs[0:500]
 	neg_test = all_neg_docs[899:]
 
 	return pos_train, pos_test, neg_train, neg_test
