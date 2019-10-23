@@ -5,7 +5,7 @@ from tqdm import tqdm
 import collections
 import operator
 
-def collect_train_data(train_data_files):
+def collect_train_data(train_data_files, stopwords):
 	all_docs = []
 	for file in tqdm(train_data_files):
 		with open(file, "r") as f:
@@ -17,14 +17,14 @@ def collect_train_data(train_data_files):
 
 			# Removing the new line token
 			for i, token in enumerate(all_tokens):
-				if token == "\n":
+				if token in stopwords:
 					del all_tokens[i]
 
 		all_docs.append(all_tokens)
 
 	return all_docs
 
-def load_data(train_pos_data_path, train_neg_data_path):
+def load_data(train_pos_data_path, train_neg_data_path, stopwords):
 
 	train_files_pos = [join(train_pos_data_path, f) for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
 	train_files_neg = [join(train_neg_data_path, f) for f in listdir(train_neg_data_path) if isfile(join(train_neg_data_path, f))]
@@ -35,15 +35,15 @@ def load_data(train_pos_data_path, train_neg_data_path):
 	print("The count of all positive files is: ", len(train_files_pos))
 	print("The count of all negative files is: ", len(train_files_neg))
 
-	all_pos_docs = collect_train_data(train_files_pos)
-	all_neg_docs = collect_train_data(train_files_neg)
+	all_pos_docs = collect_train_data(train_files_pos, stopwords)
+	all_neg_docs = collect_train_data(train_files_neg, stopwords)
 
 	# Split train and test data
-	pos_train = all_pos_docs[0:500]
-	pos_test = all_pos_docs[899:]
+	pos_train = all_pos_docs[0:900]
+	pos_test = all_pos_docs[900:]
 
-	neg_train = all_neg_docs[0:500]
-	neg_test = all_neg_docs[899:]
+	neg_train = all_neg_docs[0:900]
+	neg_test = all_neg_docs[900:]
 
 	return pos_train, pos_test, neg_train, neg_test
 

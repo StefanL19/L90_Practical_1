@@ -77,8 +77,7 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 
 	return vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq
 
-def apply_multinomial_NB(doc, vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq):
-	tokens = data_preprocessing.tokenize_text(doc)
+def apply_multinomial_NB(tokens, vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq):
 
 	bag = [0] * len(vocab)
 
@@ -107,7 +106,13 @@ def apply_multinomial_NB(doc, vocab, prior_pos, prior_neg, vocab_pos_freq, vocab
 	final_pos = score_pos + np.sum(np.log(features_pos))
 	final_neg = score_neg + np.sum(np.log(features_neg))
 
-	print(final_pos)
-	print(final_neg)
+	if final_pos > final_neg:
+		return 1
+
+	else:
+		return 0
+	# print(final_pos)
+	# print(final_neg)
+	# print("-------------------------")
 
 

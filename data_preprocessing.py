@@ -128,18 +128,3 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 
 	return vocab, tokenized_docs
 
-	# bag_vectors = []
-
-	# for doc in tqdm(tokenized_docs):
-	# 	bag = [0] * len(vocab)
-
-	# 	for w in doc:
-	# 		for i, word in enumerate(vocab):
-	# 			if word == w:
-	# 				# If we need also the count, it can be bag[i] += 1 
-	# 				bag[i] = 1
-
-	# 	bag_vectors.append(bag)
-
-	# print(bag_vectors[0])
-
