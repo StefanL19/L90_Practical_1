@@ -21,17 +21,12 @@ def count_word_occurences(len_vocab, q, vocabulary, doc):
 
 				# Increment the number of its occurences in the positive corpora by 1
 				vocab_freq[i] += 1
-
-	print(q.qsize())
-	q.put(vocab_freq)
+	q.append(vocab_freq)
+	
+	print(len(q))
 
 
 def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=False):
-	# train_files_pos = [join(train_pos_data_path, f) for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
-	# train_files_neg = [join(train_neg_data_path, f) for f in listdir(train_neg_data_path) if isfile(join(train_neg_data_path, f))]
-
-	# print("The count of all positive files is: ", len(train_files_pos))
-	# print("The count of all negative files is: ", len(train_files_neg))
 
 	prior_pos = len(train_files_pos)/(len(train_files_pos) + len(train_files_neg))
 	prior_neg = len(train_files_neg)/(len(train_files_pos)+len(train_files_neg))
@@ -44,53 +39,45 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 	pos_docs_tokens = docs_tokenized[:len(train_files_pos)]
 	neg_docs_tokens = docs_tokenized[len(train_files_neg):]
 
-	# vocab_pos_freq = [0]*len(vocab)
-	# vocab_neg_freq = [0]*len(vocab)
-
 	vocab_length = len(vocab)
 
 	print("Started iterating positive documents")
+	m = multiprocessing.Manager()
+	pos_list = m.list()
+	neg_list = m.list()
 
+	print("Started iterating positive documents")
 	with multiprocessing.Pool(processes=multiprocessing.cpu_count()-1) as pool:
-		m = multiprocessing.Manager()
-		q_1 = m.Queue()
-		pool.map(partial(count_word_occurences, vocab_length, q_1, vocab), pos_docs_tokens)
-	# for doc in tqdm(pos_docs_tokes):
-
-	# 	# For each word in the document
-	# 	for w in doc:
-
-	# 		# Check if it is in the vocabulary
-	# 		for i, word in enumerate(vocab):
-
-	# 			# If it is in the vocabular
-	# 			if word == w:
-
-	# 				# Increment the number of its occurences in the positive corpora by 1
-	# 				vocab_pos_freq[i] += 1
-
-	#########################
-	count_all_pos = sum(vocab_pos_freq)
+		pool.map(partial(count_word_occurences, vocab_length, pos_list, vocab), pos_docs_tokens)
 
 	print("Started iterating negative documents")
-	# for doc in tqdm(neg_docs_tokens):
-	# 	for w in doc:
-	# 		for i, word in enumerate(vocab):
-	# 			if word == w:
-	# 				vocab_neg_freq[i] += 1
+	with multiprocessing.Pool(processes=multiprocessing.cpu_count()-1) as pool:
+		pool.map(partial(count_word_occurences, vocab_length, neg_list, vocab), neg_docs_tokens)
+	
+	vocab_pos_freq = np.array([0]*len(vocab))
+	vocab_neg_freq = np.array([0]*len(vocab))
 
-	# count_all_neg = sum(vocab_neg_freq)
+	for el in pos_list:
+		vocab_pos_freq += np.array(el)
 
-	# if laplace_smoothing:
-	# 	print("Using laplace laplace_smoothing")
-	# 	vocab_pos_freq = [(x+1) / (count_all_pos+1) for x in vocab_pos_freq]
-	# 	vocab_neg_freq = [(x+1) / (count_all_neg+1) for x in vocab_neg_freq]
+	for el in neg_list:
+		vocab_neg_freq += np.array(el)
 
-	# else:
-	# 	vocab_pos_freq = [x / count_all_pos for x in vocab_pos_freq]
-	# 	vocab_neg_freq = [x / count_all_neg for x in vocab_neg_freq]
+	count_all_pos = np.sum(vocab_pos_freq)
+	count_all_neg = np.sum(vocab_neg_freq)
 
-	# return vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq
+
+	if laplace_smoothing:
+		print("Laplace Smootinng Applied")
+		vocab_pos_freq = [(x+1) / (count_all_pos+1) for x in vocab_pos_freq]
+		vocab_neg_freq = [(x+1) / (count_all_neg+1) for x in vocab_neg_freq]
+
+	else:
+		print("No Laplace Smoothing")
+		vocab_pos_freq = [x / count_all_pos for x in vocab_pos_freq]
+		vocab_neg_freq = [x / count_all_neg for x in vocab_neg_freq]
+
+	return vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq
 
 def apply_multinomial_NB(doc, vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq):
 	tokens = data_preprocessing.tokenize_text(doc)
