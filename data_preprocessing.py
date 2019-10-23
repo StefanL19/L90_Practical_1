@@ -94,20 +94,13 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 	bigrams = []
 
 	print("All files are: ", len(train_files))
+	for tokenized_text in tqdm(train_files):
+		tokens, diff_grams = generate_n_grams(min_grams, max_grams, tokenized_text)
 
-	for train_file in tqdm(train_files):
-		with open(train_file) as f:
-			text = f.read()
+		tokenized_docs.append(tokens)
 
-			# Tokenize and preprocess the document
-			tokenized_text = tokenize_text(text)
-
-			tokens, diff_grams = generate_n_grams(min_grams, max_grams, tokenized_text)
-
-			tokenized_docs.append(tokens)
-
-			unigrams.extend(diff_grams[0])
-			bigrams.extend(diff_grams[1])
+		unigrams.extend(diff_grams[0])
+		bigrams.extend(diff_grams[1])
 
 	vocab = []
 	unigrams = dict(collections.Counter(unigrams))

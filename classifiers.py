@@ -3,13 +3,32 @@ from os import listdir
 from os.path import isfile, join
 from tqdm import tqdm
 import numpy as np
+from multiprocessing import Pool, Queue
 
-def train_multinomial_NB(train_pos_data_path, train_neg_data_path,laplace_smoothing=False):
-	train_files_pos = [join(train_pos_data_path, f) for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
-	train_files_neg = [join(train_neg_data_path, f) for f in listdir(train_neg_data_path) if isfile(join(train_neg_data_path, f))]
+def count_word_occurences(len_vocab, q, doc):
+	vocab_freq = [0]*len_vocab
 
-	print("The count of all positive files is: ", len(train_files_pos))
-	print("The count of all negative files is: ", len(train_files_neg))
+	# For each word in the document
+	for w in doc:
+
+		# Check if it is in the vocabulary
+		for i, word in enumerate(vocab):
+
+			# If it is in the vocabular
+			if word == w:
+
+				# Increment the number of its occurences in the positive corpora by 1
+				vocab_freq[i] += 1
+
+	q.put(vocab_freq)
+
+
+def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=False):
+	# train_files_pos = [join(train_pos_data_path, f) for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
+	# train_files_neg = [join(train_neg_data_path, f) for f in listdir(train_neg_data_path) if isfile(join(train_neg_data_path, f))]
+
+	# print("The count of all positive files is: ", len(train_files_pos))
+	# print("The count of all negative files is: ", len(train_files_neg))
 
 	prior_pos = len(train_files_pos)/(len(train_files_pos) + len(train_files_neg))
 	prior_neg = len(train_files_neg)/(len(train_files_pos)+len(train_files_neg))
