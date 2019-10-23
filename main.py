@@ -12,8 +12,8 @@ TRAIN_NEG_PATH = "data/data-tagged/NEG"
 pos_train, pos_test, neg_train, neg_test = data_loading.load_data(TRAIN_POS_PATH, TRAIN_NEG_PATH)
 
 # Step 2 Train Naive Bayes Classifier on the training data
-vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(pos_train, neg_train, False)
-
+#vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(pos_train, neg_train, False)
+classifiers.train_multinomial_NB(pos_train, neg_train, False)
 
 
 # vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(TRAIN_POS_PATH, TRAIN_NEG_PATH, False)
