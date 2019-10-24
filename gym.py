@@ -5,28 +5,28 @@ from tqdm import tqdm
 import metrics
 
 def generate_predictions(vocab_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test):
-	with open(vocab_path, 'r') as f:
-    	vocabulary = f.read().splitlines()
+    with open(vocab_path, 'r') as f:
+        vocabulary = f.read().splitlines()
 
-   	with open(vocab_pos_freq_path, 'r') as f:
-		vocab_pos_freq = []
-   		pos_freq = f.read().splitlines()
+    with open(vocab_pos_freq_path, 'r') as f:
+        vocab_pos_freq = []
+        pos_freq = f.read().splitlines()
 
-    	for item in pos_freq:
-    		vocab_pos_freq.append(float(item))
+        for item in pos_freq:
+            vocab_pos_freq.append(float(item))
 
-   	with open(vocab_neg_freq_path, 'r') as f:
-    	vocab_neg_freq = []
-    	neg_freq = f.read().splitlines()
+    with open(vocab_neg_freq_path, 'r') as f:
+        vocab_neg_freq = []
+        neg_freq = f.read().splitlines()
 
-    	for item in neg_freq:
-    		vocab_neg_freq.append(float(item))
+        for item in neg_freq:
+            vocab_neg_freq.append(float(item))
 
-   	with open(prior_pos_path, 'r') as f:
-    	prior_pos = float(f.read().splitlines()[0])
+    with open(prior_pos_path, 'r') as f:
+        prior_pos = float(f.read().splitlines()[0])
 
-   	with open(prior_neg_path, 'r') as f:
-    	prior_neg = float(f.read().splitlines()[0])
+    with open(prior_neg_path, 'r') as f:
+        prior_neg = float(f.read().splitlines()[0])
 
 
     # Generate the predictions by using a saved model
@@ -75,6 +75,7 @@ def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, ou
          f.write(str(prior_neg))
 
     print("Model training finished, the model was saved in directory: ", out_directory)
+
 
 
 

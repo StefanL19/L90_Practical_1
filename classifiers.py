@@ -111,8 +111,5 @@ def apply_multinomial_NB(tokens, vocab, prior_pos, prior_neg, vocab_pos_freq, vo
 
 	else:
 		return 0
-	# print(final_pos)
-	# print(final_neg)
-	# print("-------------------------")
 
 
