@@ -1,32 +1,32 @@
 import classifiers
-from os import listdir
+from os import listdir, mkdir
 import data_loading
 from tqdm import tqdm
 import metrics
 
 def generate_predictions(vocab_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test):
-	with open(vocab_path, 'r') as f:
-    	vocabulary = f.read().splitlines()
+    with open(vocab_path, 'r') as f:
+        vocabulary = f.read().splitlines()
 
-   	with open(vocab_pos_freq_path, 'r') as f:
-		vocab_pos_freq = []
-   		pos_freq = f.read().splitlines()
+    with open(vocab_pos_freq_path, 'r') as f:
+        vocab_pos_freq = []
+        pos_freq = f.read().splitlines()
 
-    	for item in pos_freq:
-    		vocab_pos_freq.append(float(item))
+        for item in pos_freq:
+            vocab_pos_freq.append(float(item))
 
-   	with open(vocab_neg_freq_path, 'r') as f:
-    	vocab_neg_freq = []
-    	neg_freq = f.read().splitlines()
+    with open(vocab_neg_freq_path, 'r') as f:
+        vocab_neg_freq = []
+        neg_freq = f.read().splitlines()
 
-    	for item in neg_freq:
-    		vocab_neg_freq.append(float(item))
+        for item in neg_freq:
+            vocab_neg_freq.append(float(item))
 
-   	with open(prior_pos_path, 'r') as f:
-    	prior_pos = float(f.read().splitlines()[0])
+    with open(prior_pos_path, 'r') as f:
+        prior_pos = float(f.read().splitlines()[0])
 
-   	with open(prior_neg_path, 'r') as f:
-    	prior_neg = float(f.read().splitlines()[0])
+    with open(prior_neg_path, 'r') as f:
+        prior_neg = float(f.read().splitlines()[0])
 
 
     # Generate the predictions by using a saved model
@@ -47,9 +47,9 @@ def generate_predictions(vocab_path, vocab_pos_freq_path, vocab_neg_freq_path, p
     overall_accuracy = metrics.acc(preds, all_gt)
     print(overall_accuracy)
 
-def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, out_directory):
+def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, out_directory, test_start_idx, test_end_idx):
     # Step 1 Load the data
-    pos_train, pos_test, neg_train, neg_test = data_loading.load_data(TRAIN_POS_PATH, TRAIN_NEG_PATH, stopwords)
+    pos_train, pos_test, neg_train, neg_test = data_loading.load_data(train_pos_path, train_neg_path, stopwords, test_start_idx, test_end_idx)
 
     # Step 2 Train Naive Bayes Classifier on the training data
     vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(pos_train, neg_train, laplace_smoothing)
@@ -75,6 +75,26 @@ def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, ou
          f.write(str(prior_neg))
 
     print("Model training finished, the model was saved in directory: ", out_directory)
+
+    # Return the test sets, so the model can be tested on the appropriate data
+    return pos_test, neg_test
+
+
+stopwords = ["\n"]
+test_splits = [[0, 100], [100, 200], [200, 300], [300, 400], [400, 500], [500, 600], [600, 700], [700, 800], [800, 900], [900, 1000]]
+
+for idx, split in tqdm(enumerate(test_splits)):
+    data_dir = "data/experiments/k_fold/"+str(idx)
+    mkdir(data_dir)
+    pos_test, neg_test = train_model("data/data-tagged/POS/", "data/data-tagged/NEG/", stopwords, True, data_dir+"/", split[0], split[1])
+    vocabulary_path = data_dir+"/"+"vocab.txt"
+    vocab_pos_freq_path = data_dir+"/"+'vocab_pos_freq.txt'
+    vocab_neg_freq_path = data_dir+"/"+'vocab_neg_freq.txt'
+    prior_pos_path = data_dir+"/"+'prior_pos.txt'
+    prior_neg_path = data_dir+"/"+'prior_neg.txt'
+
+    #generate_predictions(vocabulary_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test)
+
 
 
 
