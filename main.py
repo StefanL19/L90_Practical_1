@@ -47,9 +47,9 @@ def generate_predictions(vocab_path, vocab_pos_freq_path, vocab_neg_freq_path, p
     overall_accuracy = metrics.acc(preds, all_gt)
     print(overall_accuracy)
 
-def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, out_directory, test_start_idx, test_end_idx):
+def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, out_directory, split):
     # Step 1 Load the data
-    pos_train, pos_test, neg_train, neg_test = data_loading.load_data(train_pos_path, train_neg_path, stopwords, test_start_idx, test_end_idx)
+    pos_train, pos_test, neg_train, neg_test = data_loading.load_data_kfold_10(train_pos_path, train_neg_path, stopwords, split)
 
     # Step 2 Train Naive Bayes Classifier on the training data
     vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(pos_train, neg_train, laplace_smoothing)
@@ -82,8 +82,9 @@ def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, ou
 
 def train_validation_naive_bayes():
     stopwords = ["\n"]
-    test_splits = [[0, 100], [100, 200], [200, 300], [300, 400], [400, 500], [500, 600], [600, 700], [700, 800], [800, 900], [900, 1000]]
+    test_splits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+    laplace_smoothing = True
     for idx, split in tqdm(enumerate(test_splits)):
 
         if laplace_smoothing:
@@ -93,7 +94,7 @@ def train_validation_naive_bayes():
         
         mkdir(data_dir)
         
-        pos_test, neg_test = train_model("data/data-tagged/POS/", "data/data-tagged/NEG/", stopwords, True, data_dir+"/", split[0], split[1])
+        pos_test, neg_test = train_model("data/data-tagged/POS/", "data/data-tagged/NEG/", stopwords, laplace_smoothing, data_dir+"/", split)
         
         vocabulary_path = data_dir+"/"+"vocab.txt"
         vocab_pos_freq_path = data_dir+"/"+'vocab_pos_freq.txt'
@@ -103,6 +104,6 @@ def train_validation_naive_bayes():
 
         #generate_predictions(vocabulary_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test)
 
-
-
+#data_loading.load_data_kfold_10("data/data-tagged/POS/", "data/data-tagged/NEG/", ["\n"], test_category=0)
+train_validation_naive_bayes()
 

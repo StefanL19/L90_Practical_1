@@ -57,7 +57,6 @@ def prepare_docs():
 	assert os.path.isfile("data/aclImdb/alldata-id.txt"), "alldata-id.txt unavailable"
 	print("Success, alldata-id.txt is available for next steps.")
 
-
 import gensim
 from gensim.models.doc2vec import TaggedDocument
 from collections import namedtuple
@@ -70,18 +69,14 @@ alldocs = []
 with smart_open('data/aclImdb/alldata-id.txt', 'rb', encoding='utf-8') as alldata:
     for line_no, line in enumerate(alldata):
         tokens = gensim.utils.to_unicode(line).split()
-        print(tokens)
         words = tokens[1:]
         tags = [line_no] # 'tags = [tokens[0]]' would also work at extra memory cost
-        split = ['train', 'test', 'extra', 'extra'][line_no//25000]  # 25k train, 25k test, 25k extra
-        sentiment = [1.0, 0.0, 1.0, 0.0, None, None, None, None][line_no//12500] # [12.5K pos, 12.5K neg]*2 then unknown
-        alldocs.append(SentimentDocument(words, tags, split, sentiment))
+        alldocs.append(TaggedDocument(words=words, tags=tags))
 
-train_docs = [doc for doc in alldocs if doc.split == 'train']
-test_docs = [doc for doc in alldocs if doc.split == 'test']
-print(train_docs[0])
-print('%d docs: %d train-sentiment, %d test-sentiment' % (len(alldocs), len(train_docs), len(test_docs)))
-
+print("All docs that will be used for training are: ", len(alldocs))
+max_epochs = 100
+vec_size = 100
+alpha = 0.025
 
 from random import shuffle
 doc_list = alldocs[:]  
@@ -93,13 +88,15 @@ from collections import OrderedDict
 import multiprocessing
 
 cores = multiprocessing.cpu_count()
-assert gensim.models.doc2vec.FAST_VERSION > -1, "This will be painfully slow otherwise"
-
 
 model = Doc2Vec(dm=0, vector_size=100, negative=5, hs=0, min_count=2, sample=0, 
             epochs=20, workers=cores)
 
+Doc2Vec(dm=0, vector_size=100, negative=5, hs=0, min_count=2, sample=0, 
+            epochs=20, workers=cores)
+
 model.build_vocab(alldocs)
+
 model.train(doc_list, total_examples=len(doc_list), epochs=model.epochs)
 
-
+# Save the trained model
