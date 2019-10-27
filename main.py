@@ -80,20 +80,28 @@ def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, ou
     return pos_test, neg_test
 
 
-stopwords = ["\n"]
-test_splits = [[0, 100], [100, 200], [200, 300], [300, 400], [400, 500], [500, 600], [600, 700], [700, 800], [800, 900], [900, 1000]]
+def train_validation_naive_bayes():
+    stopwords = ["\n"]
+    test_splits = [[0, 100], [100, 200], [200, 300], [300, 400], [400, 500], [500, 600], [600, 700], [700, 800], [800, 900], [900, 1000]]
 
-for idx, split in tqdm(enumerate(test_splits)):
-    data_dir = "data/experiments/k_fold/"+str(idx)
-    mkdir(data_dir)
-    pos_test, neg_test = train_model("data/data-tagged/POS/", "data/data-tagged/NEG/", stopwords, True, data_dir+"/", split[0], split[1])
-    vocabulary_path = data_dir+"/"+"vocab.txt"
-    vocab_pos_freq_path = data_dir+"/"+'vocab_pos_freq.txt'
-    vocab_neg_freq_path = data_dir+"/"+'vocab_neg_freq.txt'
-    prior_pos_path = data_dir+"/"+'prior_pos.txt'
-    prior_neg_path = data_dir+"/"+'prior_neg.txt'
+    for idx, split in tqdm(enumerate(test_splits)):
 
-    #generate_predictions(vocabulary_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test)
+        if laplace_smoothing:
+            data_dir = "data/experiments/k_fold/laplace_smoothing/"+str(idx)
+        else:
+            data_dir = "data/experiments/k_fold/no_laplace_smoothing/"+str(idx)
+        
+        mkdir(data_dir)
+        
+        pos_test, neg_test = train_model("data/data-tagged/POS/", "data/data-tagged/NEG/", stopwords, True, data_dir+"/", split[0], split[1])
+        
+        vocabulary_path = data_dir+"/"+"vocab.txt"
+        vocab_pos_freq_path = data_dir+"/"+'vocab_pos_freq.txt'
+        vocab_neg_freq_path = data_dir+"/"+'vocab_neg_freq.txt'
+        prior_pos_path = data_dir+"/"+'prior_pos.txt'
+        prior_neg_path = data_dir+"/"+'prior_neg.txt'
+
+        #generate_predictions(vocabulary_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test)
 
 
 

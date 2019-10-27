@@ -113,3 +113,5 @@ def apply_multinomial_NB(tokens, vocab, prior_pos, prior_neg, vocab_pos_freq, vo
 		return 0
 
 
+
+

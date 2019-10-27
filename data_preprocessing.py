@@ -4,7 +4,7 @@ import re
 from tqdm import tqdm
 import collections
 import operator
-
+import gensim
 
 def tokenize_text(text):
 	words = re.sub("[^\w]", " ",  text).split()
