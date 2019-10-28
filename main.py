@@ -84,13 +84,13 @@ def train_validation_naive_bayes():
     stopwords = ["\n"]
     test_splits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    laplace_smoothing = True
+    laplace_smoothing = False
     for idx, split in tqdm(enumerate(test_splits)):
 
         if laplace_smoothing:
             data_dir = "data/experiments/k_fold/laplace_smoothing/"+str(idx)
         else:
-            data_dir = "data/experiments/k_fold/no_laplace_smoothing/"+str(idx)
+            data_dir = "data/experiments/k_fold_no_laplace/no_laplace_smoothing/"+str(idx)
         
         mkdir(data_dir)
         
