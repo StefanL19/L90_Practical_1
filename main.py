@@ -102,7 +102,7 @@ def train_validation_naive_bayes():
         prior_pos_path = data_dir+"/"+'prior_pos.txt'
         prior_neg_path = data_dir+"/"+'prior_neg.txt'
 
-        #generate_predictions(vocabulary_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test)
+        generate_predictions(vocabulary_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test)
 
 #data_loading.load_data_kfold_10("data/data-tagged/POS/", "data/data-tagged/NEG/", ["\n"], test_category=0)
 train_validation_naive_bayes()
