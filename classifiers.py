@@ -26,9 +26,7 @@ def count_word_occurences(len_vocab, q, vocabulary, doc):
 
 
 def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=False):
-	print("The length of positive training files is: ", len(train_files_pos))
-	print("----------------------------------------------------")
-	
+
 	prior_pos = len(train_files_pos)/(len(train_files_pos) + len(train_files_neg))
 	prior_neg = len(train_files_neg)/(len(train_files_pos)+len(train_files_neg))
 
