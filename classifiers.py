@@ -44,6 +44,8 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 	pos_list = m.list()
 	neg_list = m.list()
 
+	print("The length of positive document tokens is: ", len(pos_docs_tokens))
+	
 	print("Started iterating positive documents")
 	with multiprocessing.Pool(processes=multiprocessing.cpu_count()-45) as pool:
 		pool.map(partial(count_word_occurences, vocab_length, pos_list, vocab), pos_docs_tokens)
