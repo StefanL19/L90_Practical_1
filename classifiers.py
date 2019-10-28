@@ -31,7 +31,7 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 	prior_neg = len(train_files_neg)/(len(train_files_pos)+len(train_files_neg))
 
 	train_files = train_files_pos + train_files_neg
-	
+
 	# Generating the embeddings
 	vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(1, 2, train_files)
 
@@ -77,11 +77,13 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 
 	return vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq
 
-def apply_multinomial_NB(tokens, vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq):
-
+def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, gt, all_predictions, tokens):
 	bag = [0] * len(vocab)
 
-	for w in tokens:
+	#Apply unigrams and bigrams to the tokens
+	augmented_tokens, diff_grams = data_preprocessing.generate_n_grams(1,2,tokens)
+
+	for w in augmented_tokens:
 		for i, word in enumerate(vocab):
 			if word == w:
 				bag[i] = 1
@@ -107,10 +109,12 @@ def apply_multinomial_NB(tokens, vocab, prior_pos, prior_neg, vocab_pos_freq, vo
 	final_neg = score_neg + np.sum(np.log(features_neg))
 
 	if final_pos > final_neg:
-		return 1
+		all_predictions.append([gt, 1])
 
 	else:
-		return 0
+		all_predictions.append([gt, 0])
+
+	print(len(all_predictions))
 
 
 

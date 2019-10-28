@@ -3,7 +3,9 @@ from os import listdir, mkdir
 import data_loading
 from tqdm import tqdm
 import metrics
-
+import multiprocessing 
+from functools import partial
+import numpy as np
 def generate_predictions(vocab_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test):
     with open(vocab_path, 'r') as f:
         vocabulary = f.read().splitlines()
@@ -30,22 +32,19 @@ def generate_predictions(vocab_path, vocab_pos_freq_path, vocab_neg_freq_path, p
 
 
     # Generate the predictions by using a saved model
-    preds = []
-    for sample in tqdm(pos_test):
-        prediction = classifiers.apply_multinomial_NB(sample, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq)
-        preds.append(prediction)
+    m = multiprocessing.Manager()
+    preds = m.list()
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count()-45) as pool:
+        pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds), pos_test)
 
-    for sample in tqdm(neg_test):
-        prediction = classifiers.apply_multinomial_NB(sample, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq)
-        preds.append(prediction)
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count()-45) as pool:
+        pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds), neg_test)
 
-    pos_gt = [1]*len(pos_test)
-    neg_gt = [0]*len(neg_test)
+    all_gt = np.array(preds)[:, 0]
+    all_preds = np.array(preds)[:, 1]
 
-    all_gt = pos_gt + neg_gt
-
-    overall_accuracy = metrics.acc(preds, all_gt)
-    print(overall_accuracy)
+    overall_accuracy = metrics.acc(all_preds, all_gt)
+    print("The overall accuracy of the model is: ", overall_accuracy)
 
 def train_model(train_pos_path, train_neg_path, stopwords, laplace_smoothing, out_directory, split):
     # Step 1 Load the data
@@ -104,6 +103,20 @@ def train_validation_naive_bayes():
 
         generate_predictions(vocabulary_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test)
 
-#data_loading.load_data_kfold_10("data/data-tagged/POS/", "data/data-tagged/NEG/", ["\n"], test_category=0)
 train_validation_naive_bayes()
+
+# train_pos_path = "data/data-tagged/POS/"
+# train_neg_path = "data/data-tagged/NEG/"
+# stopwords = ["\n"]
+# vocabulary_path = "data/experiments/k_fold/laplace_smoothing/laplace_smoothing/9/vocab.txt"
+# vocab_pos_freq_path = "data/experiments/k_fold/laplace_smoothing/laplace_smoothing/9/vocab_pos_freq.txt"
+# vocab_neg_freq_path ="data/experiments/k_fold/laplace_smoothing/laplace_smoothing/9/vocab_neg_freq.txt"
+# prior_pos_path = "data/experiments/k_fold/laplace_smoothing/laplace_smoothing/9/prior_pos.txt"
+# prior_neg_path = "data/experiments/k_fold/laplace_smoothing/laplace_smoothing/9/prior_neg.txt"
+# pos_train, pos_test, neg_train, neg_test = data_loading.load_data_kfold_10(train_pos_path, train_neg_path, stopwords, 6)
+# generate_predictions(vocabulary_path, vocab_pos_freq_path, vocab_neg_freq_path, prior_pos_path, prior_neg_path, pos_test, neg_test)
+
+
+# data_loading.load_data_kfold_10("data/data-tagged/POS/", "data/data-tagged/NEG/", ["\n"], test_category=0)
+# train_validation_naive_bayes()
 

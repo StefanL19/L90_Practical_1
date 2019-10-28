@@ -17,6 +17,7 @@ def generate_embeddings(train_pos_data_path, train_neg_data_path):
 	tokenized_docs = []
 
 	train_files = [f for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
+	print(train_files)
 	
 	for train_file in tqdm(train_files):
 		file_full_path = train_pos_data_path+"/"+train_file
