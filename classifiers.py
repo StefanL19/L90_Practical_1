@@ -7,6 +7,10 @@ import multiprocessing
 from functools import partial
 
 def count_word_occurences(len_vocab, q, vocabulary, doc):
+	"""
+		Generates BoW embeddings for a document based on a vocabulary
+	"""
+
 	vocab_freq = [0]*len_vocab
 
 	# For each word in the document

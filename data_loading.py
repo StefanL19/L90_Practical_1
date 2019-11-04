@@ -7,6 +7,11 @@ import operator
 import numpy as np
 
 def collect_train_data(train_data_files, stopwords):
+	"""
+		Reads the files and tokenizes the entries in them by also removing the stopwords
+		train_data_files: The paths for the files that should be tokenized
+		stopwords: List of stopwords that should be excluded
+	"""
 	all_docs = []
 	for file in tqdm(train_data_files):
 		with open(file, "r") as f:
@@ -26,7 +31,9 @@ def collect_train_data(train_data_files, stopwords):
 	return all_docs
 
 def load_data_kfold_10(train_pos_data_path, train_neg_data_path, stopwords, test_category):
-
+	"""
+		Reads the data, tokenizes it by removing the stopwords and splits it by taking 9 out of 10 folds for training and 1 fold for testing
+	"""
 	train_files_pos = [join(train_pos_data_path, f) for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
 	train_files_neg = [join(train_neg_data_path, f) for f in listdir(train_neg_data_path) if isfile(join(train_neg_data_path, f))]
 
