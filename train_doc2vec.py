@@ -7,6 +7,9 @@ import sys
 import codecs
 from smart_open import smart_open
 import re
+import gensim
+from gensim.models.callbacks import CallbackAny2Vec
+from gensim.test.utils import get_tmpfile
 
 # dirname = 'data/aclImdb'
 # filename = 'aclImdb_v1.tar.gz'
@@ -58,12 +61,25 @@ import re
 # 	print("Success, alldata-id.txt is available for next steps.")
 
 # import gensim
-# from gensim.models.doc2vec import TaggedDocument
+from gensim.models.doc2vec import TaggedDocument
 # from collections import namedtuple
 
 # # this data object class suffices as a `TaggedDocument` (with `words` and `tags`) 
 # # plus adds other state helpful for our later evaluation/reporting
 # SentimentDocument = namedtuple('SentimentDocument', 'words tags split sentiment')
+
+class EpochLogger(CallbackAny2Vec):
+     '''Callback to log information about training'''
+
+     def __init__(self):
+         self.epoch = 0
+
+     def on_epoch_begin(self, model):
+         print("Epoch #{} start".format(self.epoch))
+
+     def on_epoch_end(self, model):
+         print("Epoch #{} end".format(self.epoch))
+         self.epoch += 1
 
 alldocs = []
 with smart_open('data/aclImdb/alldata-id.txt', 'rb', encoding='utf-8') as alldata:
@@ -73,6 +89,17 @@ with smart_open('data/aclImdb/alldata-id.txt', 'rb', encoding='utf-8') as alldat
         tags = [line_no] # 'tags = [tokens[0]]' would also work at extra memory cost
         alldocs.append(TaggedDocument(words=words, tags=tags))
         
+class EpochSaver(CallbackAny2Vec):
+	'''Callback to save model after each epoch.'''
+
+	def __init__(self, path_prefix):
+	 self.path_prefix = path_prefix
+	 self.epoch = 0
+
+	def on_epoch_end(self, model):
+	 output_path = '{}_epoch{}.model'.format(self.path_prefix, self.epoch)
+	 model.save(output_path)
+	 self.epoch += 1
 
 print("All docs that will be used for training are: ", len(alldocs))
 max_epochs = 100
@@ -88,16 +115,15 @@ import gensim.models.doc2vec
 from collections import OrderedDict
 import multiprocessing
 
-cores = multiprocessing.cpu_count() - 20
+cores = multiprocessing.cpu_count() - 1
 
 model = Doc2Vec(dm=0, vector_size=100, negative=5, hs=0, min_count=2, sample=0, 
             epochs=20, workers=cores)
 
-Doc2Vec(dm=0, vector_size=100, negative=5, hs=0, min_count=2, sample=0, 
-            epochs=20, workers=cores)
-
 model.build_vocab(alldocs)
+epoch_logger = EpochLogger()
+epoch_saver = EpochSaver(path_prefix="init_model")
 
-model.train(doc_list, total_examples=len(doc_list), epochs=model.epochs)
+model.train(doc_list, total_examples=len(doc_list), epochs=model.epochs, callbacks=[epoch_logger, epoch_saver])
 
 # Save the trained model
