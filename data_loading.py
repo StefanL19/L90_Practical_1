@@ -138,6 +138,6 @@ def load_data_kfold_10_test(train_pos_data_path, train_neg_data_path, stopwords,
 	print("The size of the positive test set is: ", len(pos_test))
 	print("The size of the negative test set is: ", len(neg_test))
 
-	return pos_train, pos_test, neg_train,  eg_test
+	return pos_train, pos_test, neg_train, neg_test
 
 

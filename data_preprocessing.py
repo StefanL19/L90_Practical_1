@@ -56,7 +56,6 @@ def generate_n_grams(min_grams, max_grams, tokens):
 	# Check from where to start
 	if max_grams != 1:
 		if min_grams == 1:
-
 			# If the unigrams are included in the requested embeddings include them in the list
 			diff_grams.append(old_tokens)
 
@@ -86,6 +85,28 @@ def generate_n_grams(min_grams, max_grams, tokens):
 
 			diff_grams.append(n_grams)
 
+	else:
+		orig_tokens_len = len(old_tokens)
+
+		for n in range(min_grams, min(max_grams + 1, orig_tokens_len+1)):
+			
+			#Create a list that will store the concrete values of the n_gram calculation
+			n_grams = []
+
+			for i in range(orig_tokens_len - n + 1):
+
+				# Append the concrete n_gram value to the embedding of the document
+				n_gram = " ".join(old_tokens[i:i+n])
+
+				# Append the n-gram embeddings to the general embeddings of the document
+				tokens.append(n_gram)
+
+				# Append the n-grams to a different list, so each n-grams can be filtered separately
+				n_grams.append(n_gram)
+
+			diff_grams.append(n_grams)
+
+
 	return tokens, diff_grams
 
 
@@ -101,7 +122,10 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 		tokenized_docs.append(tokens)
 
 		unigrams.extend(diff_grams[0])
-		bigrams.extend(diff_grams[1])
+
+		if (min_grams != max_grams):
+			# We should use both unigram and bigram features
+			bigrams.extend(diff_grams[1])
 
 	vocab = []
 	unigrams = dict(collections.Counter(unigrams))
@@ -117,14 +141,18 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 	# NOTE THAT THIS IS NOT EXPLICITLY MENTIONED IN THE ARTICLE
 	len_all_unigrams =len(vocab)
 
-	bigrams = dict(collections.Counter(bigrams))
-	sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
-	
-	for i, item in enumerate(sorted_bigrams):
-		vocab.append(item[0])
+	# Use bigram features only if explicitly mentioned
+	if (min_grams != max_grams):
 
-		if i > len_all_unigrams:
-			break
+		bigrams = dict(collections.Counter(bigrams))
+		sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
+		
+		for i, item in enumerate(sorted_bigrams):
+			vocab.append(item[0])
+
+			if i > len_all_unigrams:
+				break
+
 	vocab = sorted(vocab)
 
 	return vocab, tokenized_docs

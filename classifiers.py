@@ -29,15 +29,28 @@ def count_word_occurences(len_vocab, q, vocabulary, doc):
 	print(len(q))
 
 
-def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=False):
+def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_bigrams, laplace_smoothing=False):
 
 	prior_pos = len(train_files_pos)/(len(train_files_pos) + len(train_files_neg))
 	prior_neg = len(train_files_neg)/(len(train_files_pos)+len(train_files_neg))
 
 	train_files = train_files_pos + train_files_neg
 
-	# Generating the embeddings
-	vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(1, 2, train_files)
+	if use_unigrams and use_bigrams:
+		print("We are using both unigrams and bigrams")
+		# Generating the embeddings by using unigrams and bigrams
+		vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(1, 2, train_files)
+
+	elif use_bigrams and not use_unigrams:
+		print("We are using bigrams but not unigrams")
+		vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(2, 2, train_files)
+
+	elif use_unigrams and not use_bigrams:
+		# We are using only unigrams
+		print("We are using unigrams but not bigrams")
+		vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(1, 1, train_files)
+
+	print("The total length of the vocabulary is: ", len(vocab))
 
 	pos_docs_tokens = docs_tokenized[:len(train_files_pos)]
 	neg_docs_tokens = docs_tokenized[len(train_files_neg):]
@@ -49,11 +62,11 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 	neg_list = m.list()
 
 	print("Started iterating positive documents")
-	with multiprocessing.Pool(processes=multiprocessing.cpu_count()-45) as pool:
+	with multiprocessing.Pool(processes=multiprocessing.cpu_count()-40) as pool:
 		pool.map(partial(count_word_occurences, vocab_length, pos_list, vocab), pos_docs_tokens)
 
 	print("Started iterating negative documents")
-	with multiprocessing.Pool(processes=multiprocessing.cpu_count()-45) as pool:
+	with multiprocessing.Pool(processes=multiprocessing.cpu_count()-40) as pool:
 		pool.map(partial(count_word_occurences, vocab_length, neg_list, vocab), neg_docs_tokens)
 	
 	vocab_pos_freq = np.array([0]*len(vocab))
@@ -70,7 +83,7 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 
 
 	if laplace_smoothing:
-		print("Laplace Smootinng Applied")
+		print("Laplace Smoothing Applied")
 		vocab_pos_freq = [(x+1) / (count_all_pos+1) for x in vocab_pos_freq]
 		vocab_neg_freq = [(x+1) / (count_all_neg+1) for x in vocab_neg_freq]
 
@@ -81,11 +94,11 @@ def train_multinomial_NB(train_files_pos, train_files_neg, laplace_smoothing=Fal
 
 	return vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq
 
-def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, gt, all_predictions, tokens):
+def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, gt, all_predictions,  min_grams, max_grams, tokens):
 	bag = [0] * len(vocab)
 
 	#Apply unigrams and bigrams to the tokens
-	augmented_tokens, diff_grams = data_preprocessing.generate_n_grams(1,2,tokens)
+	augmented_tokens, diff_grams = data_preprocessing.generate_n_grams(min_grams,max_grams,tokens)
 
 	for w in augmented_tokens:
 		for i, word in enumerate(vocab):
