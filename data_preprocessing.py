@@ -137,7 +137,7 @@ def generate_embeddings_unigrams(train_files):
 
 	return vocab, tokenized_docs
 
-def generate_embeddings_bigrams(train_files);
+def generate_embeddings_bigrams(train_files):
 	"""
 		Generates Bigrams Embeddings on the passed training files
 	"""
