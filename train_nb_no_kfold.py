@@ -21,17 +21,16 @@ USE_BIGRAMS = False
 pos_train, pos_test, neg_train, neg_test = data_loading.load_data_simple_train_test(TRAIN_POS_PATH, TRAIN_NEG_PATH, STOPWORDS)
 
 # Step 2 Train Naive Bayes Classifier on the training data
-vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(pos_train, neg_train, USE_UNIGRAMS, USE_BIGRAMS, LAPLACE_SMOOTHING)
-
+vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(pos_train[:10], neg_train[:10], USE_UNIGRAMS, USE_BIGRAMS, LAPLACE_SMOOTHING)
 
 # Generate the predictions by using a saved model
 m = multiprocessing.Manager()
 preds = m.list()
-with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
-    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 1, 1), pos_test)
+with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 1) as pool:
+    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 1, 1), pos_test[:10])
 
-with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
-    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 1, 1), neg_test)
+with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 1) as pool:
+    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 1, 1), neg_test[:10])
 
 all_gt = np.array(preds)[:, 0]
 all_preds = np.array(preds)[:, 1]
@@ -39,4 +38,4 @@ all_preds = np.array(preds)[:, 1]
 overall_accuracy = metrics.acc(all_preds, all_gt)
 print("The overall accuracy of the model is: ", overall_accuracy)
 
-
+classifiers.save_nb_classifier(vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, "data/trained_models/no_fold_unigram_true_bigram_false_laplace_true/")
