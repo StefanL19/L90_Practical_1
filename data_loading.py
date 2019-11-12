@@ -161,7 +161,7 @@ def load_data_simple_train_test(train_pos_data_path, train_neg_data_path, stopwo
 	pos_train = all_pos_docs[:900]
 	neg_train = all_neg_docs[:900]
 	pos_test = all_pos_docs[900:]
-	neg_test = all_pos_docs[900:]
+	neg_test = all_neg_docs[900:]
 
 	print("The size of the positive training set is: ", len(pos_train))
 	print("The size of the negative training set is: ", len(neg_train))
