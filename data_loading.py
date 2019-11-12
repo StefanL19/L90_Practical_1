@@ -141,3 +141,32 @@ def load_data_kfold_10_test(train_pos_data_path, train_neg_data_path, stopwords,
 	return pos_train, pos_test, neg_train, neg_test
 
 
+def load_data_simple_train_test(train_pos_data_path, train_neg_data_path, stopwords):
+	"""
+		Reads the data, tokenizes it by removing the stopwords and splits it by taking 9 out of 10 folds for training and 1 fold for testing
+	"""
+
+	train_files_pos = [join(train_pos_data_path, f) for f in listdir(train_pos_data_path) if isfile(join(train_pos_data_path, f))]
+	train_files_neg = [join(train_neg_data_path, f) for f in listdir(train_neg_data_path) if isfile(join(train_neg_data_path, f))]
+
+	train_files_pos.sort(key = lambda x: x.split("_")[0].replace("cv", ""))
+	train_files_neg.sort(key = lambda x: x.split("_")[0].replace("cv", ""))
+
+	print("The count of all positive files is: ", len(train_files_pos))
+	print("The count of all negative files is: ", len(train_files_neg))
+
+	all_pos_docs = collect_train_data(train_files_pos, stopwords)
+	all_neg_docs = collect_train_data(train_files_neg, stopwords)
+
+	pos_train = all_pos_docs[:900]
+	neg_train = all_neg_docs[:900]
+	pos_test = all_pos_docs[900:]
+	neg_test = all_pos_docs[900:]
+
+	print("The size of the positive training set is: ", len(pos_train))
+	print("The size of the negative training set is: ", len(neg_train))
+	print("The size of the positive test set is: ", len(pos_test))
+	print("The size of the negative test set is: ", len(neg_test))
+
+	return pos_train, pos_test, neg_train, neg_test
+
