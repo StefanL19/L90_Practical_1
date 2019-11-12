@@ -97,11 +97,12 @@ def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_big
 	return vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq
 
 def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, gt, all_predictions, min_grams, max_grams, tokens):
+
 	bag = [0] * len(vocab)
 
 	if min_grams == 1 and max_grams == 1:
 		#Apply unigrams to the tokens
-		augmented_tokens, _ = data_preprocessing.generate_embeddings_unigrams(tokens)
+		augmented_tokens, _ = data_preprocessing.generate_n_grams(1,1,tokens)
 
 	elif min_grams == 1 and max_grams == 2:
 		#Apply unigrams and bigrams to the tokens
@@ -109,7 +110,7 @@ def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_
 
 	elif min_grams == 2 and max_grams == 2:
 		#Apply bigrams to the tokens 
-		augmented_tokens, _ = data_preprocessing.generate_embeddings_bigrams(tokens)
+		augmented_tokens, _ = data_preprocessing.generate_n_grams(2,2,tokens)
 
 	unknown_words = []
 	for w in augmented_tokens:
@@ -122,7 +123,9 @@ def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_
 		if is_unknown:
 			unknown_words.append(w)
 
-	print("The unknown words in the document were: ", unknown_words)
+	# print("All words in the document are: ", len(augmented_tokens))
+	# print("The unknown words in the document were: ", len(unknown_words))
+	# print("-------------------------------------------------------------")
 
 	score_pos = np.log(prior_pos)
 	score_neg = np.log(prior_neg)

@@ -116,7 +116,6 @@ def generate_embeddings_unigrams(train_files):
 	"""
 	tokenized_docs = []
 	unigrams = []
-	print("All files are: ", len(train_files))
 
 	for tokenized_text in tqdm(train_files):
 		tokens, diff_grams = generate_n_grams(1, 1, tokenized_text)
@@ -144,7 +143,6 @@ def generate_embeddings_bigrams(train_files):
 	tokenized_docs = []
 	bigrams = []
 
-	print("All files are: ", len(train_files))
 	for tokenized_text in tqdm(train_files):
 		tokens, diff_grams = generate_n_grams(2, 2, tokenized_text)
 
@@ -172,7 +170,6 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 	unigrams = []
 	bigrams = []
 
-	print("All files are: ", len(train_files))
 	for tokenized_text in tqdm(train_files):
 		tokens, diff_grams = generate_n_grams(min_grams, max_grams, tokenized_text)
 
