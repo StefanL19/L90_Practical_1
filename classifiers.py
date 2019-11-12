@@ -50,7 +50,7 @@ def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_big
 	elif use_unigrams and not use_bigrams:
 		# We are using only unigrams
 		print("We are using unigrams but not bigrams")
-		vocab, docs_tokenized = data_preprocessing.generate_embeddings_unigrams(1, 1, train_files)
+		vocab, docs_tokenized = data_preprocessing.generate_embeddings_unigrams(train_files)
 
 	print("The total length of the vocabulary is: ", len(vocab))
 
