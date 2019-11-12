@@ -100,20 +100,14 @@ def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_
 	bag = [0] * len(vocab)
 
 	if min_grams == 1 and max_grams == 1:
-		print("Tokenizing the text data by using only the unigram tokens")
-
 		#Apply unigrams to the tokens
 		augmented_tokens, _ = data_preprocessing.generate_embeddings_unigrams(tokens)
 
 	elif min_grams == 1 and max_grams == 2:
-		print("Tokenizing the text data by using both unigram and bigram tokens")
-		
 		#Apply unigrams and bigrams to the tokens
 		augmented_tokens, _ = data_preprocessing.generate_n_grams(1, 2, tokens)
 
 	elif min_grams == 2 and max_grams == 2:
-		print("Tokenizing the text data by only using bigram tokens")
-
 		#Apply bigrams to the tokens 
 		augmented_tokens, _ = data_preprocessing.generate_embeddings_bigrams(tokens)
 
