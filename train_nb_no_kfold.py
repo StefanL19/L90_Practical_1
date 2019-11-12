@@ -12,7 +12,7 @@ STOPWORDS = ["\n"]
 TRAIN_POS_PATH = "data/data-tagged/POS/"
 TRAIN_NEG_PATH = "data/data-tagged/NEG/"
 USE_UNIGRAMS = True
-USE_BIGRAMS = False
+USE_BIGRAMS = True
 
 # #Parameter that will determine which files are we going to use for testing
 # TEST_CATEGORY  = 9
