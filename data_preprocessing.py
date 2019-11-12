@@ -110,7 +110,64 @@ def generate_n_grams(min_grams, max_grams, tokens):
 	return tokens, diff_grams
 
 
+def generate_embeddings_unigrams(train_files):
+	"""
+		Generates unigram embeddings on the passed trainining files
+	"""
+	tokenized_docs = []
+	unigrams = []
+	print("All files are: ", len(train_files))
+
+	for tokenized_text in tqdm(train_files):
+		tokens, diff_grams = generate_n_grams(1, 1, tokenized_text)
+		tokenized_docs.append(tokens)
+		unigrams.extend(diff_grams[0])
+
+	vocab = []
+	unigrams = dict(collections.Counter(unigrams))
+
+
+	# Filter the unigrams, so that only the ones that occur more than 4 times are left in the vocabulary
+	for (key,value) in unigrams.items():
+		# Check if an item occurs more than 4 times
+		if value >= 4:
+			vocab.append(key)
+
+	vocab = sorted(vocab)
+
+	return vocab, tokenized_docs
+
+def generate_embeddings_bigrams(train_files);
+	"""
+		Generates Bigrams Embeddings on the passed training files
+	"""
+	tokenized_docs = []
+	bigrams = []
+
+	print("All files are: ", len(train_files))
+	for tokenized_text in tqdm(train_files):
+		tokens, diff_grams = generate_n_grams(2, 2, tokenized_text)
+
+		tokenized_docs.append(tokens)
+
+		# We should use both unigram and bigram features
+		bigrams.extend(diff_grams[0])
+
+	bigrams = dict(collections.Counter(bigrams))
+	sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
+	
+	vocab = []
+	
+	for i, item in enumerate(sorted_bigrams):
+		vocab.append(item[0])
+
+	return bigrams, tokenized_docs
+
+
 def generate_embeddings_generic(min_grams, max_grams, train_files):
+	"""
+		Generates both unigram and bigram embeddings on the passed train files
+	"""
 	tokenized_docs = []
 	unigrams = []
 	bigrams = []
@@ -123,9 +180,8 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 
 		unigrams.extend(diff_grams[0])
 
-		if (min_grams != max_grams):
-			# We should use both unigram and bigram features
-			bigrams.extend(diff_grams[1])
+		# We should use both unigram and bigram features
+		bigrams.extend(diff_grams[1])
 
 	vocab = []
 	unigrams = dict(collections.Counter(unigrams))
@@ -141,17 +197,15 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 	# NOTE THAT THIS IS NOT EXPLICITLY MENTIONED IN THE ARTICLE
 	len_all_unigrams =len(vocab)
 
-	# Use bigram features only if explicitly mentioned
-	if (min_grams != max_grams):
 
-		bigrams = dict(collections.Counter(bigrams))
-		sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
-		
-		for i, item in enumerate(sorted_bigrams):
-			vocab.append(item[0])
+	bigrams = dict(collections.Counter(bigrams))
+	sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
+	
+	for i, item in enumerate(sorted_bigrams):
+		vocab.append(item[0])
 
-			if i > len_all_unigrams:
-				break
+		if i > len_all_unigrams:
+			break
 
 	vocab = sorted(vocab)
 

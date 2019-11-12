@@ -19,14 +19,16 @@ def count_word_occurences(len_vocab, q, vocabulary, doc):
 		# Check if it is in the vocabulary
 		for i, word in enumerate(vocabulary):
 
-			# If it is in the vocabular
+			# If it is in the vocabulary
 			if word == w:
 
 				# Increment the number of its occurences in the positive corpora by 1
 				vocab_freq[i] += 1
+
 	q.append(vocab_freq)
 	
 	print(len(q))
+
 
 
 def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_bigrams, laplace_smoothing=False):
@@ -39,11 +41,11 @@ def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_big
 	if use_unigrams and use_bigrams:
 		print("We are using both unigrams and bigrams")
 		# Generating the embeddings by using unigrams and bigrams
-		vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(1, 2, train_files)
+		vocab, docs_tokenized = data_preprocessing.generate_embeddings_unigrams(train_files)
 
 	elif use_bigrams and not use_unigrams:
 		print("We are using bigrams but not unigrams")
-		vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(2, 2, train_files)
+		vocab, docs_tokenized = data_preprocessing.generate_embeddings_bigrams(train_files)
 
 	elif use_unigrams and not use_bigrams:
 		# We are using only unigrams
@@ -94,16 +96,39 @@ def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_big
 
 	return vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq
 
-def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, gt, all_predictions,  min_grams, max_grams, tokens):
+def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, gt, all_predictions, min_grams, max_grams, tokens):
 	bag = [0] * len(vocab)
 
-	#Apply unigrams and bigrams to the tokens
-	augmented_tokens, diff_grams = data_preprocessing.generate_n_grams(min_grams,max_grams,tokens)
+	if min_grams == 1 and max_grams == 1:
+		print("Tokenizing the text data by using only the unigram tokens")
 
+		#Apply unigrams to the tokens
+		augmented_tokens, _ = data_preprocessing.generate_embeddings_unigrams(tokens)
+
+	elif min_grams == 1 and max_grams == 2:
+		print("Tokenizing the text data by using both unigram and bigram tokens")
+		
+		#Apply unigrams and bigrams to the tokens
+		augmented_tokens, _ = data_preprocessing.generate_n_grams(1, 2, tokens)
+
+	elif min_grams == 2 and max_grams == 2:
+		print("Tokenizing the text data by only using bigram tokens")
+
+		#Apply bigrams to the tokens 
+		augmented_tokens, _ = data_preprocessing.generate_embeddings_bigrams(tokens)
+
+	unknown_words = []
 	for w in augmented_tokens:
+		is_unknown = True
 		for i, word in enumerate(vocab):
 			if word == w:
 				bag[i] = 1
+				is_unknown = False
+
+		if is_unknown:
+			unknown_words.append(w)
+
+	print("The unknown words in the document were: ", unknown_words)
 
 	score_pos = np.log(prior_pos)
 	score_neg = np.log(prior_neg)

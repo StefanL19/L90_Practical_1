@@ -12,7 +12,7 @@ STOPWORDS = ["\n"]
 TRAIN_POS_PATH = "data/data-tagged/POS/"
 TRAIN_NEG_PATH = "data/data-tagged/NEG/"
 USE_UNIGRAMS = True
-USE_BIGRAMS = True
+USE_BIGRAMS = False
 
 # #Parameter that will determine which files are we going to use for testing
 # TEST_CATEGORY  = 9
@@ -28,10 +28,10 @@ vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.t
 m = multiprocessing.Manager()
 preds = m.list()
 with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
-    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 1, 2), pos_test)
+    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 1, 1), pos_test)
 
 with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
-    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 1, 2), neg_test)
+    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 1, 1), neg_test)
 
 all_gt = np.array(preds)[:, 0]
 all_preds = np.array(preds)[:, 1]
