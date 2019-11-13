@@ -15,14 +15,14 @@ USE_UNIGRAMS = True
 USE_BIGRAMS = True
 
 TRAIN_NEW = True
-OUT_PATH = "data/trained_models/10_fold_no_test/unigram_true_bigram_true_laplace_true_val_fold_0/"
+OUT_PATH = "data/trained_models/10_fold_no_test/unigram_true_bigram_true_laplace_true_val_fold_1/"
 
 import os
 if not os.path.exists(OUT_PATH):
     os.makedirs(OUT_PATH)
 
 #Parameter that will determine which files are we going to use for testing
-TEST_CATEGORY  = 0
+TEST_CATEGORY  = 1
 
 
 # Step 1 Load the data
