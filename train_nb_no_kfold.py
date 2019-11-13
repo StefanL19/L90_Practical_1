@@ -7,15 +7,15 @@ import multiprocessing
 from functools import partial
 import numpy as np
 
-LAPLACE_SMOOTHING=True
+LAPLACE_SMOOTHING=False
 STOPWORDS = ["\n"]
 TRAIN_POS_PATH = "data/data-tagged/POS/"
 TRAIN_NEG_PATH = "data/data-tagged/NEG/"
-USE_UNIGRAMS = False
+USE_UNIGRAMS = True
 USE_BIGRAMS = True
 
 TRAIN_NEW = True
-OUT_PATH = "data/trained_models/no_fold_unigram_false_bigram_true_laplace_true/"
+OUT_PATH = "data/trained_models/no_fold_unigram_true_bigram_true_laplace_false/"
 
 import os
 if not os.path.exists(OUT_PATH):
@@ -49,10 +49,10 @@ print("-------------------------------------------")
 m = multiprocessing.Manager()
 preds = m.list()
 with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
-    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 2, 2), pos_test)
+    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 1, 2), pos_test)
 
 with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
-    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 2, 2), neg_test)
+    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 1, 2), neg_test)
 
 all_gt = np.array(preds)[:, 0]
 all_preds = np.array(preds)[:, 1]

@@ -15,14 +15,14 @@ USE_UNIGRAMS = True
 USE_BIGRAMS = True
 
 TRAIN_NEW = True
-OUT_PATH = "data/trained_models/10_fold_no_test/unigram_true_bigram_true_laplace_true_val_fold_1/"
+OUT_PATH = "data/trained_models/10_fold_no_test/unigram_true_bigram_true_laplace_true_val_fold_0/"
 
 import os
 if not os.path.exists(OUT_PATH):
     os.makedirs(OUT_PATH)
 
 #Parameter that will determine which files are we going to use for testing
-TEST_CATEGORY  = 1
+TEST_CATEGORY  = 0
 
 
 # Step 1 Load the data
@@ -50,10 +50,10 @@ print("-------------------------------------------")
 m = multiprocessing.Manager()
 preds = m.list()
 with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
-    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 2, 2), pos_test)
+    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 1, 2), pos_test)
 
 with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
-    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 2, 2), neg_test)
+    pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 1, 2), neg_test)
 
 all_gt = np.array(preds)[:, 0]
 all_preds = np.array(preds)[:, 1]
