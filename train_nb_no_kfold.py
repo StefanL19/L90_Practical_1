@@ -19,7 +19,7 @@ OUT_PATH = "data/trained_models/no_fold_unigram_true_bigram_true_laplace_true/"
 
 
 import os
-if not os.path.exists(directory):
+if not os.path.exists(OUT_PATH):
     os.makedirs(OUT_PATH)
   
 # #Parameter that will determine which files are we going to use for testing
