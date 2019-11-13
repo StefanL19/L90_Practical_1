@@ -48,10 +48,10 @@ print("-------------------------------------------")
 # Generate the predictions by using a saved model
 m = multiprocessing.Manager()
 preds = m.list()
-with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 1) as pool:
+with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
     pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 1, preds, 2, 2), pos_test)
 
-with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 1) as pool:
+with multiprocessing.Pool(processes=multiprocessing.cpu_count()- 40) as pool:
     pool.map(partial(classifiers.apply_multinomial_NB, vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, 0, preds, 2, 2), neg_test)
 
 all_gt = np.array(preds)[:, 0]
