@@ -152,14 +152,18 @@ def generate_embeddings_bigrams(train_files):
 		bigrams.extend(diff_grams[0])
 
 	bigrams = dict(collections.Counter(bigrams))
-	sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
 	
 	vocab = []
-	
-	for i, item in enumerate(sorted_bigrams):
-		vocab.append(item[0])
 
-	return bigrams, tokenized_docs
+	# Filter the bigrams, so that only the ones that occur more than 7 times are left in the vocabulary (same as Pang et al.)
+	for (key,value) in bigrams.items():
+		# Check if an item occurs more than 7 times
+		if value >= 7:
+			vocab.append(key)
+
+	vocab = sorted(vocab)
+
+	return vocab, tokenized_docs
 
 
 def generate_embeddings_generic(min_grams, max_grams, train_files):
