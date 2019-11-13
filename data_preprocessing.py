@@ -194,19 +194,23 @@ def generate_embeddings_generic(min_grams, max_grams, train_files):
 			vocab.append(key)
 
 
-	# Take as many bigrams as many unigrams are there in the vocabulary 
-	# NOTE THAT THIS IS NOT EXPLICITLY MENTIONED IN THE ARTICLE
+	# For a bigram to be included in the dictionary, it should appear at least 7 times in the copora
 	len_all_unigrams =len(vocab)
-
-
 	bigrams = dict(collections.Counter(bigrams))
-	sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
-	
-	for i, item in enumerate(sorted_bigrams):
-		vocab.append(item[0])
 
-		if i > len_all_unigrams:
-			break
+	for (key,value) in bigrams.items():
+		# Check if an item occurs more than 4 times
+		if value >= 7:
+			vocab.append(key)
+	
+	# Equal bigrams, not needed
+	# sorted_bigrams = sorted(bigrams.items(), key=operator.itemgetter(1), reverse=True)
+	
+	# for i, item in enumerate(sorted_bigrams):
+	# 	vocab.append(item[0])
+
+	# 	if i > len_all_unigrams:
+	# 		break
 
 	vocab = sorted(vocab)
 
