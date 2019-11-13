@@ -27,7 +27,7 @@ def save_nb_classifier(vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_n
 
     print("Model training finished, the model was saved in directory: ", out_directory)
 
-def load_nb_model(out_path):
+def load_nb_model(out_directory):
 
     with open(out_directory+'vocab.txt', 'r') as f:
         vocabulary = f.read().splitlines()
@@ -52,7 +52,7 @@ def load_nb_model(out_path):
     with open(out_directory+'prior_neg.txt', 'r') as f:
         prior_neg = float(f.read().splitlines()[0])
 
-    return (vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq)
+    return vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq
 
 def count_word_occurences(len_vocab, q, vocabulary, doc):
     """
@@ -112,11 +112,11 @@ def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_big
     neg_list = m.list()
 
     print("Started iterating positive documents")
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 40) as pool:
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1) as pool:
         pool.map(partial(count_word_occurences, vocab_length, pos_list, vocab), pos_docs_tokens)
 
     print("Started iterating negative documents")
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 40) as pool:
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1) as pool:
         pool.map(partial(count_word_occurences, vocab_length, neg_list, vocab), neg_docs_tokens)
     
     vocab_pos_freq = np.array([0]*len(vocab))
