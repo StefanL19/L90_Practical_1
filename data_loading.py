@@ -19,7 +19,9 @@ def collect_train_data(train_data_files, stopwords):
 			all_tokens = []
 			for token in text:
 				token = token.split("\t")
-				all_tokens.append(token[0])
+
+				#Append token to the list by making it appear in lower case
+				all_tokens.append(token[0].lower())
 
 			# Removing the new line token
 			for i, token in enumerate(all_tokens):
