@@ -36,13 +36,13 @@ for feature_combination in feature_combinations:
     OUT_PATH = "data/trained_models/10_fold_no_test/unigram_"+ str(USE_UNIGRAMS).lower() + "_bigram_"+ str(USE_BIGRAMS).lower() +"_laplace_"+ str(LAPLACE_SMOOTHING).lower() +"/val_fold_"
 
     for TEST_CATEGORY in range(0, 10):
-            print("Started iterating for category " + str(TEST_CATEGORY))
-            print("-----------------------------------------------")
-            OUT_PATH_n = OUT_PATH + str(TEST_CATEGORY) + "/"
+        print("Started iterating for category " + str(TEST_CATEGORY))
+        print("-----------------------------------------------")
+        OUT_PATH_n = OUT_PATH + str(TEST_CATEGORY) + "/"
 
-            import os
-            if not os.path.exists(OUT_PATH_n):
-                    os.makedirs(OUT_PATH_n)
+        import os
+        if not os.path.exists(OUT_PATH_n):
+            os.makedirs(OUT_PATH_n)
 
 
 
@@ -50,28 +50,28 @@ for feature_combination in feature_combinations:
     #TEST_CATEGORY    = 0
 
 
-            # Step 1 Load the data
-            pos_train, pos_test, neg_train, neg_test = data_loading.load_data_kfold_10_test(TRAIN_POS_PATH, TRAIN_NEG_PATH, STOPWORDS, TEST_CATEGORY)
+        # Step 1 Load the data
+        pos_train, pos_test, neg_train, neg_test = data_loading.load_data_kfold_10_test(TRAIN_POS_PATH, TRAIN_NEG_PATH, STOPWORDS, TEST_CATEGORY)
 
-            if TRAIN_NEW:
-                print("Training a new model")
-                print("-----------------------------------")
-             # Step 2 Train Naive Bayes Classifier on the training data
-                    vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(pos_train, neg_train, USE_UNIGRAMS, USE_BIGRAMS, LAPLACE_SMOOTHING)
+        if TRAIN_NEW:
+            print("Training a new model")
+            print("-----------------------------------")
+         # Step 2 Train Naive Bayes Classifier on the training data
+            vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.train_multinomial_NB(pos_train, neg_train, USE_UNIGRAMS, USE_BIGRAMS, LAPLACE_SMOOTHING)
 
-            else:
-                    vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.load_nb_model(OUT_PATH_n)
+        else:
+            vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.load_nb_model(OUT_PATH_n)
 
 
-            top_10_idx = np.argsort(vocab_pos_freq)[-100:]
-            top_10_values = [vocabulary[i] for i in top_10_idx]
-            print("Top positive words: ", top_10_values)
-            print("-------------------------------------------")
+        top_10_idx = np.argsort(vocab_pos_freq)[-100:]
+        top_10_values = [vocabulary[i] for i in top_10_idx]
+        print("Top positive words: ", top_10_values)
+        print("-------------------------------------------")
 
-            top_10_idx = np.argsort(vocab_neg_freq)[-100:]
-            top_10_values = [vocabulary[i] for i in top_10_idx]
-            print("Top negative words: ", top_10_values)
-            print("-------------------------------------------")
+        top_10_idx = np.argsort(vocab_neg_freq)[-100:]
+        top_10_values = [vocabulary[i] for i in top_10_idx]
+        print("Top negative words: ", top_10_values)
+        print("-------------------------------------------")
 
     # Generate the predictions by using a saved model
     #m = multiprocessing.Manager()
@@ -88,5 +88,5 @@ for feature_combination in feature_combinations:
     #overall_accuracy = metrics.acc(all_preds, all_gt)
     #print("The overall accuracy of the model is: ", overall_accuracy)
 
-            if TRAIN_NEW:
-                    classifiers.save_nb_classifier(vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, OUT_PATH_n)
+        if TRAIN_NEW:
+                classifiers.save_nb_classifier(vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, OUT_PATH_n)
