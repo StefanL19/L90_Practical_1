@@ -8,7 +8,15 @@ from functools import partial
 import numpy as np
 
 LAPLACE_SMOOTHING=False
-STOPWORDS = ["\n"]
+
+# Add initial list of stopwords 
+stop_words = []
+with open('file_name.ext', 'r') as f:
+	stop_words = f.readlines()
+
+# Add the new line token to the stopwords
+STOPWORDS = stop_words + ["\n"]
+
 TRAIN_POS_PATH = "data/data-tagged/POS/"
 TRAIN_NEG_PATH = "data/data-tagged/NEG/"
 USE_UNIGRAMS = True

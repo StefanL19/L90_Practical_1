@@ -7,15 +7,24 @@ import multiprocessing
 from functools import partial
 import numpy as np
 
-LAPLACE_SMOOTHING=False
-STOPWORDS = ["\n"]
+LAPLACE_SMOOTHING=True
+
+# Add initial list of stopwords 
+STOPWORDS = []
+with open('stopwords.txt', 'r') as f:
+    STOPWORDS = f.read().splitlines()
+
+# Add the empty line token to the list of stopwords
+STOPWORDS.append("\n")
+print(STOPWORDS)
+
 TRAIN_POS_PATH = "data/data-tagged/POS/"
 TRAIN_NEG_PATH = "data/data-tagged/NEG/"
 USE_UNIGRAMS = True
-USE_BIGRAMS = False
+USE_BIGRAMS = True
 
 TRAIN_NEW = True
-OUT_PATH = "data/trained_models/10_fold_no_test/unigram_true_bigram_false_laplace_false/val_fold_"
+OUT_PATH = "data/trained_models/10_fold_no_test/unigram_"+ str(USE_UNIGRAMS).lower() + "_bigram_"+ str(USE_BIGRAMS).lower() +"_laplace_"+ str(LAPLACE_SMOOTHING).lower() +"_stopwords/val_fold_"
 
 for TEST_CATEGORY in range(0, 10):
         print("Started iterating for category " + str(TEST_CATEGORY))
