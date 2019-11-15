@@ -33,7 +33,7 @@ for feature_combination in feature_combinations:
 
 
     #TRAIN_NEW = True
-    OUT_PATH = "data/trained_models/10_fold_no_test/unigram_"+ str(USE_UNIGRAMS).lower() + "_bigram_"+ str(USE_BIGRAMS).lower() +"_laplace_"+ str(LAPLACE_SMOOTHING).lower() +"/val_fold_"
+    OUT_PATH = "data/trained_models/10_fold_no_test/unigram_"+ str(USE_UNIGRAMS).lower() + "_bigram_"+ str(USE_BIGRAMS).lower() +"_laplace_"+ str(LAPLACE_SMOOTHING).lower() +"_stopwords/val_fold_"
 
     for TEST_CATEGORY in range(0, 10):
         print("Started iterating for category " + str(TEST_CATEGORY))
