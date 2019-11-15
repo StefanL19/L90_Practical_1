@@ -16,7 +16,7 @@ feature_combinations = [[True, True, True],
 
 for feature_combination in feature_combinations:
     LAPLACE_SMOOTHING=feature_combination[2]
-    USE_UNIGRAMS = feature_combinationp[0]
+    USE_UNIGRAMS = feature_combination[0]
     USE_BIGRAMS = feature_combination[1]
 
     # Add initial list of stopwords 
