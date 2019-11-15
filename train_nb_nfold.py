@@ -30,7 +30,7 @@ for feature_combination in feature_combinations:
 
     TRAIN_POS_PATH = "data/data-tagged/POS/"
     TRAIN_NEG_PATH = "data/data-tagged/NEG/"
-
+    TRAIN_NEW = True
 
     #TRAIN_NEW = True
     OUT_PATH = "data/trained_models/10_fold_no_test/unigram_"+ str(USE_UNIGRAMS).lower() + "_bigram_"+ str(USE_BIGRAMS).lower() +"_laplace_"+ str(LAPLACE_SMOOTHING).lower() +"_stopwords/val_fold_"
