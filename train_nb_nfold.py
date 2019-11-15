@@ -21,8 +21,8 @@ for feature_combination in feature_combinations:
 
     # Add initial list of stopwords 
     STOPWORDS = []
-    # with open('stopwords.txt', 'r') as f:
-    #     STOPWORDS = f.read().splitlines()
+    with open('stopwords.txt', 'r') as f:
+        STOPWORDS = f.read().splitlines()
 
     # Add the empty line token to the list of stopwords
     STOPWORDS.append("\n")
