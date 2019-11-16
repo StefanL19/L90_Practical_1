@@ -59,6 +59,10 @@ def predict(unigrams, bigrams, laplace_smoothing, stopwords):
 
 
 
+		import os
+		if not os.path.exists("data/trained_models/predictions/cross_fold/"+str(fold)+"/"):
+			os.makedirs("data/trained_models/predictions/cross_fold/"+str(fold)+"/")
+
 		save_path = "data/trained_models/predictions/cross_fold/"+str(fold)+"/unigram_"+str(unigrams).lower()+"_bigram_"+str(bigrams).lower()+"_laplace_"+str(laplace_smoothing).lower()+"_stopwords_"+str(stopwords).lower()+".txt"
 		np.savetxt(save_path,np.array(predictions))
 
