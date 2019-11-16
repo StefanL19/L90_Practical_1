@@ -203,6 +203,46 @@ def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_
 
     print(len(all_predictions))
 
+def apply_multinomial_NB_slow(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, min_grams, max_grams, tokens):
 
+    bag = [0] * len(vocab)
+    augmented_tokens, _ = data_preprocessing.generate_n_grams(min_grams,max_grams,tokens)
+
+    unknown_words = []
+    for w in augmented_tokens:
+        is_unknown = True
+        for i, word in enumerate(vocab):
+            if word == w:
+                bag[i] = 1
+                is_unknown = False
+
+        if is_unknown:
+            unknown_words.append(w)
+
+    score_pos = np.log(prior_pos)
+    score_neg = np.log(prior_neg)
+
+    bag = np.array(bag)
+    vocab_pos_freq = np.array(vocab_pos_freq)
+    vocab_neg_freq = np.array(vocab_neg_freq)
+
+    rel_scores_pos = np.multiply(bag, vocab_pos_freq)
+    rel_scores_neg = np.multiply(bag, vocab_neg_freq)
+
+    features_pos = []
+    features_neg = []
+    for i, v in enumerate(bag):
+        if v == 1:
+            features_pos.append(rel_scores_pos[i])
+            features_neg.append(rel_scores_neg[i])
+
+    final_pos = score_pos + np.sum(np.log(features_pos))
+    final_neg = score_neg + np.sum(np.log(features_neg))
+
+    if final_pos > final_neg:
+        return 1
+
+    else:
+        return 0 
 
 
