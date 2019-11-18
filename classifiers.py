@@ -119,11 +119,11 @@ def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_big
     neg_list = m.list()
 
     print("Started iterating positive documents")
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1) as pool:
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 40) as pool:
         pool.map(partial(count_word_occurences, vocab_length, pos_list, vocab), pos_docs_tokens)
 
     print("Started iterating negative documents")
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1) as pool:
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 40) as pool:
         pool.map(partial(count_word_occurences, vocab_length, neg_list, vocab), neg_docs_tokens)
     
     vocab_pos_freq = np.array([0]*len(vocab))
