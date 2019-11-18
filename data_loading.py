@@ -24,7 +24,7 @@ def collect_train_data(train_data_files, stopwords, lower=False):
 				if lower==True:
 					token_lower = token[0].lower()
 					if token_lower not in stopwords:
-						all_tokens.append(token_lower)
+						all_tokens.append(token[0])
 
 			# # Removing the new line token
 			# for i, token in enumerate(all_tokens):
@@ -96,7 +96,7 @@ def load_data_kfold_10_test_val(train_pos_data_path, train_neg_data_path, stopwo
 
 	return pos_train, pos_val, pos_test, neg_train, neg_val, neg_test
 
-def load_data_kfold_10_test(train_pos_data_path, train_neg_data_path, stopwords, test_category, lower=False):
+def load_data_kfold_10_test(train_pos_data_path, train_neg_data_path, stopwords, test_category, lower=True):
 	"""
 		Reads the data, tokenizes it by removing the stopwords and splits it by taking 9 out of 10 folds for training and 1 fold for testing
 	"""

@@ -61,15 +61,16 @@ def count_word_occurences(len_vocab, q, vocabulary, doc):
 
     vocab_freq = [0]*len_vocab
 
+    dictOfWords = dict.fromkeys(vocabulary , 0)
+
     # For each word in the document
     for w in doc:
 
         #Check if word is in the vocabulary
-        in_vocab = w in vocabulary
+        in_vocab = w in dictOfWords.keys()
 
         if in_vocab:
-            idx = vocabulary.index(w)
-            vocab_freq[idx] += 1
+            dictOfWords[w] += 1
 
         # # Check if it is in the vocabulary
         # for i, word in enumerate(vocabulary):
@@ -79,7 +80,7 @@ def count_word_occurences(len_vocab, q, vocabulary, doc):
 
         #         # Increment the number of its occurences in the positive corpora by 1
         #         vocab_freq[i] += 1
-
+    vocab_freq = list(dictOfWords.values())
     q.append(vocab_freq)
     
     print(len(q))
@@ -119,11 +120,11 @@ def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_big
     neg_list = m.list()
 
     print("Started iterating positive documents")
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 40) as pool:
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1) as pool:
         pool.map(partial(count_word_occurences, vocab_length, pos_list, vocab), pos_docs_tokens)
 
     print("Started iterating negative documents")
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 40) as pool:
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1) as pool:
         pool.map(partial(count_word_occurences, vocab_length, neg_list, vocab), neg_docs_tokens)
     
     vocab_pos_freq = np.array([0]*len(vocab))
@@ -212,19 +213,20 @@ def apply_multinomial_NB(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_
 
 def apply_multinomial_NB_slow(vocab, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq, min_grams, max_grams, tokens):
 
-    bag = [0] * len(vocab)
+    #bag = [0] * len(vocab)
+    dictOfWords = dict.fromkeys(vocab , 0)
+
     augmented_tokens, _ = data_preprocessing.generate_n_grams(min_grams,max_grams,tokens)
 
-    unknown_words = []
     for w in augmented_tokens:
-        is_unknown = True
-        for i, word in enumerate(vocab):
-            if word == w:
-                bag[i] = 1
-                is_unknown = False
 
-        if is_unknown:
-            unknown_words.append(w)
+        in_vocab = w in dictOfWords.keys()
+
+        if in_vocab:
+
+            dictOfWords[w] = 1
+
+    bag = list(dictOfWords.values())
 
     score_pos = np.log(prior_pos)
     score_neg = np.log(prior_neg)

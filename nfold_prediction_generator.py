@@ -9,7 +9,7 @@ import numpy as np
 from threading import Thread
 
 def predict(unigrams, bigrams, laplace_smoothing, stopwords):
-	OUT_PATH = "data/trained_models/10_fold_no_test/unigram_"+str(unigrams).lower()+"_bigram_"+str(bigrams).lower()+"_laplace_"+str(laplace_smoothing).lower()+"_stopwords_"+str(stopwords).lower()+"/val_fold_"
+	OUT_PATH = "data/trained_models_new/10_fold_no_test/unigram_"+str(unigrams).lower()+"_bigram_"+str(bigrams).lower()+"_laplace_"+str(laplace_smoothing).lower()+"_stopwords_"+str(stopwords).lower()+"/val_fold_"
 
 	print("Started Generating Predictions for Model: ", OUT_PATH)
 	print("-----------------------------------------------------")
@@ -37,9 +37,9 @@ def predict(unigrams, bigrams, laplace_smoothing, stopwords):
 	for fold in range(0,10):
 		print("Iterating for fold "+str(fold))
 		print("---------------------------")
-		OUT_PATH = OUT_PATH+str(fold)+"/"
+		OUT_PATH_current = OUT_PATH+str(fold)+"/"
 
-		vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.load_nb_model(OUT_PATH)
+		vocabulary, prior_pos, prior_neg, vocab_pos_freq, vocab_neg_freq = classifiers.load_nb_model(OUT_PATH_current)
 
 		#pos_train, pos_test, neg_train, neg_test = data_loading.load_data_simple_train_test(TRAIN_POS_PATH, TRAIN_NEG_PATH, STOPWORDS)
 		pos_train, pos_test, neg_train, neg_test = data_loading.load_data_kfold_10_test(TRAIN_POS_PATH, TRAIN_NEG_PATH, STOPWORDS, fold)
@@ -60,10 +60,10 @@ def predict(unigrams, bigrams, laplace_smoothing, stopwords):
 
 
 		import os
-		if not os.path.exists("data/trained_models/predictions/cross_fold/"+str(fold)+"/"):
-			os.makedirs("data/trained_models/predictions/cross_fold/"+str(fold)+"/")
+		if not os.path.exists("data/trained_models_new/predictions/cross_fold/"+str(fold)+"/"):
+			os.makedirs("data/trained_models_new/predictions/cross_fold/"+str(fold)+"/")
 
-		save_path = "data/trained_models/predictions/cross_fold/"+str(fold)+"/unigram_"+str(unigrams).lower()+"_bigram_"+str(bigrams).lower()+"_laplace_"+str(laplace_smoothing).lower()+"_stopwords_"+str(stopwords).lower()+".txt"
+		save_path = "data/trained_models_new/predictions/cross_fold/"+str(fold)+"/unigram_"+str(unigrams).lower()+"_bigram_"+str(bigrams).lower()+"_laplace_"+str(laplace_smoothing).lower()+"_stopwords_"+str(stopwords).lower()+".txt"
 		np.savetxt(save_path,np.array(predictions))
 
 if __name__ == '__main__':

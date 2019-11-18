@@ -9,7 +9,7 @@ def fold_acc():
 
 	overall_acc = []
 	for i in range(0, 10):
-		system_a_pred = np.loadtxt("data/trained_models/predictions/cross_fold/"+str(i)+"/unigram_true_bigram_true_laplace_true_stopwords_false.txt")
+		system_a_pred = np.loadtxt("data/trained_models_new/predictions/cross_fold/"+str(i)+"/unigram_true_bigram_false_laplace_true_stopwords_true.txt")
 		fold_acc = metrics.acc(system_a_pred, gt)
 		print("Accuracy for fold: ", str(i), " is ", fold_acc)
 		overall_acc.append(fold_acc)
@@ -43,7 +43,7 @@ def significance_test_nfold():
 all_unigrams = []
 all_bigrams = []
 for i in range(0, 10):
-	c_unigrams, c_bigrams = metrics.vocabulary_stats("data/trained_models/10_fold_no_test/unigram_true_bigram_false_laplace_true_stopwords_true/val_fold_"+str(i)+"/vocab.txt")
+	c_unigrams, c_bigrams = metrics.vocabulary_stats("data/trained_models_new/10_fold_no_test/unigram_true_bigram_true_laplace_true_stopwords_false/val_fold_"+str(i)+"/vocab.txt")
 	all_unigrams.append(c_unigrams)
 	all_bigrams.append(c_bigrams)
 
@@ -53,3 +53,4 @@ print("The average count of the bigrams is: ", np.mean(all_bigrams))
 #print("System A accuracy: ", metrics.acc(system_a_pred, gt))
 #print("System B accuracy: ", metrics.acc(system_b_pred, gt))
 
+#fold_acc()
