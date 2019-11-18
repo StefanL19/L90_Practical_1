@@ -33,7 +33,7 @@ for feature_combination in feature_combinations:
     TRAIN_NEW = True
 
     #TRAIN_NEW = True
-    OUT_PATH = "data/trained_models/10_fold_no_test/unigram_"+ str(USE_UNIGRAMS).lower() + "_bigram_"+ str(USE_BIGRAMS).lower() +"_laplace_"+ str(LAPLACE_SMOOTHING).lower() +"_stopwords/val_fold_"
+    OUT_PATH = "data/trained_models_new/10_fold_no_test/unigram_"+ str(USE_UNIGRAMS).lower() + "_bigram_"+ str(USE_BIGRAMS).lower() +"_laplace_"+ str(LAPLACE_SMOOTHING).lower() +"_stopwords_true/val_fold_"
 
     for TEST_CATEGORY in range(0, 10):
         print("Started iterating for category " + str(TEST_CATEGORY))
@@ -51,7 +51,7 @@ for feature_combination in feature_combinations:
 
 
         # Step 1 Load the data
-        pos_train, pos_test, neg_train, neg_test = data_loading.load_data_kfold_10_test(TRAIN_POS_PATH, TRAIN_NEG_PATH, STOPWORDS, TEST_CATEGORY)
+        pos_train, pos_test, neg_train, neg_test = data_loading.load_data_kfold_10_test(TRAIN_POS_PATH, TRAIN_NEG_PATH, STOPWORDS, TEST_CATEGORY, lower=True)
 
         if TRAIN_NEW:
             print("Training a new model")

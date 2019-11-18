@@ -6,7 +6,7 @@ import collections
 import operator
 import numpy as np
 
-def collect_train_data(train_data_files, stopwords):
+def collect_train_data(train_data_files, stopwords, lower=False):
 	"""
 		Reads the files and tokenizes the entries in them by also removing the stopwords
 		train_data_files: The paths for the files that should be tokenized
@@ -21,16 +21,20 @@ def collect_train_data(train_data_files, stopwords):
 				token = token.split("\t")
 
 				#Append token to the list by making it appear in lower case
-				all_tokens.append(token[0])
+				if lower==True:
+					token_lower = token[0].lower()
+					if token_lower not in stopwords:
+						all_tokens.append(token_lower)
 
-			# Removing the new line token
-			for i, token in enumerate(all_tokens):
-				if token in stopwords:
-					del all_tokens[i]
+			# # Removing the new line token
+			# for i, token in enumerate(all_tokens):
+			# 	if token in stopwords:
+			# 		del all_tokens[i]
 
 		all_docs.append(all_tokens)
 
 	return all_docs
+
 
 def load_data_kfold_10_test_val(train_pos_data_path, train_neg_data_path, stopwords, val_category, test_category):
 	"""
@@ -92,7 +96,7 @@ def load_data_kfold_10_test_val(train_pos_data_path, train_neg_data_path, stopwo
 
 	return pos_train, pos_val, pos_test, neg_train, neg_val, neg_test
 
-def load_data_kfold_10_test(train_pos_data_path, train_neg_data_path, stopwords, test_category):
+def load_data_kfold_10_test(train_pos_data_path, train_neg_data_path, stopwords, test_category, lower=False):
 	"""
 		Reads the data, tokenizes it by removing the stopwords and splits it by taking 9 out of 10 folds for training and 1 fold for testing
 	"""
@@ -106,8 +110,8 @@ def load_data_kfold_10_test(train_pos_data_path, train_neg_data_path, stopwords,
 	print("The count of all positive files is: ", len(train_files_pos))
 	print("The count of all negative files is: ", len(train_files_neg))
 
-	all_pos_docs = collect_train_data(train_files_pos, stopwords)
-	all_neg_docs = collect_train_data(train_files_neg, stopwords)
+	all_pos_docs = collect_train_data(train_files_pos, stopwords, lower)
+	all_neg_docs = collect_train_data(train_files_neg, stopwords, lower)
 
 	pos_train = []
 	neg_train = []

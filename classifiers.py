@@ -64,14 +64,21 @@ def count_word_occurences(len_vocab, q, vocabulary, doc):
     # For each word in the document
     for w in doc:
 
-        # Check if it is in the vocabulary
-        for i, word in enumerate(vocabulary):
+        #Check if word is in the vocabulary
+        in_vocab = w in vocabulary
 
-            # If it is in the vocabulary
-            if word == w:
+        if in_vocab:
+            idx = vocabulary.index(w)
+            vocab_freq[idx] += 1
 
-                # Increment the number of its occurences in the positive corpora by 1
-                vocab_freq[i] += 1
+        # # Check if it is in the vocabulary
+        # for i, word in enumerate(vocabulary):
+
+        #     # If it is in the vocabulary
+        #     if word == w:
+
+        #         # Increment the number of its occurences in the positive corpora by 1
+        #         vocab_freq[i] += 1
 
     q.append(vocab_freq)
     
@@ -112,11 +119,11 @@ def train_multinomial_NB(train_files_pos, train_files_neg, use_unigrams, use_big
     neg_list = m.list()
 
     print("Started iterating positive documents")
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 40) as pool:
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1) as pool:
         pool.map(partial(count_word_occurences, vocab_length, pos_list, vocab), pos_docs_tokens)
 
     print("Started iterating negative documents")
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 40) as pool:
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1) as pool:
         pool.map(partial(count_word_occurences, vocab_length, neg_list, vocab), neg_docs_tokens)
     
     vocab_pos_freq = np.array([0]*len(vocab))

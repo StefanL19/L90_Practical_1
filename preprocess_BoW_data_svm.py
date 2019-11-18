@@ -46,6 +46,18 @@ def convert_embeddings_to_svm_format(embeddings, doc_class):
    return embeddings_formatted
 
 def preprocess_data(train_pos_path, train_neg_path, stopwords, VAL_CATEGORY, TEST_CATEGORY):
+   general_path = "data/svm_bow/"+str(val_cat)+"/"
+
+   import os
+   if not os.path.exists(general_path+"train/"):
+      os.makedirs(general_path+"train/")
+
+   if not os.path.exists(general_path+"val/"):
+      os.makedirs(general_path+"val/")
+
+   if not os.path.exists(general_path+"test/"):
+      os.makedirs(general_path+"test/")
+
    # Preprocess and split the data into train and test sets
    pos_train, pos_val, pos_test, neg_train, neg_val, neg_test = data_loading.load_data_kfold_10_test_val(train_pos_path, train_neg_path, stopwords, VAL_CATEGORY, TEST_CATEGORY)
 
@@ -79,13 +91,13 @@ def preprocess_data(train_pos_path, train_neg_path, stopwords, VAL_CATEGORY, TES
    # Generate training docs SVM Embeddings and save them to a dataframe in a csv file
    pos_train_embeddings_format = convert_embeddings_to_svm_format(pos_list, 1)
    pos_train_df = pd.DataFrame(pos_train_embeddings_format)
-   pos_train_path = 'data_svm_bow/pos_train_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
-   pos_train_df.to_csv(pos_train_path, index=False, header=False)
+   pos_train_path = 'pos_train_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
+   pos_train_df.to_csv(general_path+"train/"+pos_train_path, index=False, header=False)
 
    neg_train_embeddings_format = convert_embeddings_to_svm_format(neg_list, 0)
    neg_train_df = pd.DataFrame(neg_train_embeddings_format)
-   neg_train_path = 'data_svm_bow/neg_train_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
-   neg_train_df.to_csv(neg_train_path, index=False, header=False)
+   neg_train_path = 'neg_train_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
+   neg_train_df.to_csv(general_path+"train/"+neg_train_path, index=False, header=False)
 
 
 
@@ -109,14 +121,14 @@ def preprocess_data(train_pos_path, train_neg_path, stopwords, VAL_CATEGORY, TES
    pos_val_embeddings_format = convert_embeddings_to_svm_format(pos_list_validation, 1)
    pos_val_df = pd.DataFrame(pos_val_embeddings_format)
 
-   pos_val_path = 'data_svm_bow/pos_val_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
-   pos_val_df.to_csv(pos_val_path, index=False, header=False)
+   pos_val_path = 'pos_val_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
+   pos_val_df.to_csv(general_path+"val/"+pos_val_path, index=False, header=False)
 
    neg_val_embeddings_format = convert_embeddings_to_svm_format(neg_list_validation, 0)
    neg_val_df = pd.DataFrame(neg_val_embeddings_format)
 
-   neg_val_path = 'data_svm_bow/neg_val_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
-   neg_val_df.to_csv(neg_val_path, index=False, header=False)
+   neg_val_path = 'neg_val_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
+   neg_val_df.to_csv(general_path+"val/"+neg_val_path, index=False, header=False)
 
 
 
@@ -139,13 +151,13 @@ def preprocess_data(train_pos_path, train_neg_path, stopwords, VAL_CATEGORY, TES
    # Generate validation docs SVM Embeddings and save them to a dataframe in a csv file
    pos_test_embeddings_format = convert_embeddings_to_svm_format(pos_list_test, 1)
    pos_test_df = pd.DataFrame(pos_test_embeddings_format)
-   pos_test_path = 'data_svm_bow/pos_test_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
-   pos_test_df.to_csv(pos_test_path, index=False, header=False)
+   pos_test_path = 'pos_test_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
+   pos_test_df.to_csv(general_path+"test/"+pos_test_path, index=False, header=False)
 
    neg_test_embeddings_format = convert_embeddings_to_svm_format(neg_list_test, 0)
    neg_test_df = pd.DataFrame(neg_test_embeddings_format)
-   neg_test_path = 'data_svm_bow/neg_test_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
-   neg_test_df.to_csv(neg_test_path, index=False, header=False)
+   neg_test_path = 'neg_test_val_%d_test_%d.csv' %(VAL_CATEGORY, TEST_CATEGORY)
+   neg_test_df.to_csv(general_path +"test/"+ neg_test_path, index=False, header=False)
 
 train_pos_path = "data/data-tagged/POS/"
 train_neg_path = "data/data-tagged/NEG/"
@@ -155,7 +167,7 @@ stopwords = ["\n"]
 VAL_CATEGORY = 1
 TEST_CATEGORY = 0
 
-for val_cat in range(1,10):
+for val_cat in range(2,10):
    print("Working on validation category ", val_cat)
    preprocess_data(train_pos_path, train_neg_path, stopwords, val_cat, TEST_CATEGORY)
 
