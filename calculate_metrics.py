@@ -9,7 +9,7 @@ def fold_acc():
 
 	overall_acc = []
 	for i in range(0, 10):
-		system_a_pred = np.loadtxt("data/trained_models_new/predictions/cross_fold/"+str(i)+"/unigram_true_bigram_false_laplace_true_stopwords_true.txt")
+		system_a_pred = np.loadtxt("data/trained_models_new/predictions/cross_fold/"+str(i)+"/unigram_true_bigram_true_laplace_true_stopwords_false.txt")
 		fold_acc = metrics.acc(system_a_pred, gt)
 		print("Accuracy for fold: ", str(i), " is ", fold_acc)
 		overall_acc.append(fold_acc)
@@ -50,7 +50,10 @@ for i in range(0, 10):
 print("The average count of the unigrams is: ", np.mean(all_unigrams))
 print("The average count of the bigrams is: ", np.mean(all_bigrams))
 
+
+
 #print("System A accuracy: ", metrics.acc(system_a_pred, gt))
 #print("System B accuracy: ", metrics.acc(system_b_pred, gt))
 
 #fold_acc()
+
