@@ -66,9 +66,8 @@ def generate_n_grams(min_grams, max_grams, tokens):
 			tokens = []
 
 		orig_tokens_len = len(old_tokens)
-
+	
 		for n in range(min_grams, min(max_grams + 1, orig_tokens_len+1)):
-			
 			#Create a list that will store the concrete values of the n_gram calculation
 			n_grams = []
 

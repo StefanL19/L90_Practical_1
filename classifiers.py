@@ -72,14 +72,6 @@ def count_word_occurences(len_vocab, q, vocabulary, doc):
         if in_vocab:
             dictOfWords[w] += 1
 
-        # # Check if it is in the vocabulary
-        # for i, word in enumerate(vocabulary):
-
-        #     # If it is in the vocabulary
-        #     if word == w:
-
-        #         # Increment the number of its occurences in the positive corpora by 1
-        #         vocab_freq[i] += 1
     vocab_freq = list(dictOfWords.values())
     q.append(vocab_freq)
     

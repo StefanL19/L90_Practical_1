@@ -11,6 +11,7 @@ def collect_train_data(train_data_files, stopwords, lower=False):
 		Reads the files and tokenizes the entries in them by also removing the stopwords
 		train_data_files: The paths for the files that should be tokenized
 		stopwords: List of stopwords that should be excluded
+		lower: Should the text be converted to lower when checking for stopwords
 	"""
 	all_docs = []
 	for file in tqdm(train_data_files):
@@ -25,11 +26,9 @@ def collect_train_data(train_data_files, stopwords, lower=False):
 					token_lower = token[0].lower()
 					if token_lower not in stopwords:
 						all_tokens.append(token[0])
-
-			# # Removing the new line token
-			# for i, token in enumerate(all_tokens):
-			# 	if token in stopwords:
-			# 		del all_tokens[i]
+				else:
+					if token[0] not in stopwords:
+						all_tokens.append(token[0])
 
 		all_docs.append(all_tokens)
 
@@ -50,8 +49,8 @@ def load_data_kfold_10_test_val(train_pos_data_path, train_neg_data_path, stopwo
 	print("The count of all positive files is: ", len(train_files_pos))
 	print("The count of all negative files is: ", len(train_files_neg))
 
-	all_pos_docs = collect_train_data(train_files_pos, stopwords)
-	all_neg_docs = collect_train_data(train_files_neg, stopwords)
+	all_pos_docs = collect_train_data(train_files_pos, stopwords, lower=True)
+	all_neg_docs = collect_train_data(train_files_neg, stopwords, lower=True)
 
 	pos_train = []
 	neg_train = []
@@ -59,8 +58,6 @@ def load_data_kfold_10_test_val(train_pos_data_path, train_neg_data_path, stopwo
 	neg_val = []
 	pos_test = []
 	neg_test = []
-	remove_pos = []
-	remove_neg = []
 
 	for idx, pos_entry in enumerate(all_pos_docs):
 		# If the index falls into the test category

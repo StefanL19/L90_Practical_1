@@ -12,23 +12,6 @@ import multiprocessing
 from classifiers import count_word_occurences
 from functools import partial 
 
-def generate_BoW_vectors(doc_files):
-   bow_embeddings = []
-   for doc in tqdm(doc_files):
-
-   # Put the data in the format [(<label>, [(<feature>, <value>), ...]), ...]
-      doc_embedding = [0]*len(vocab)
-      
-      for w in doc:
-         # Check if it is in the vocabulary
-         for i, word in enumerate(vocab):
-            if word == w:
-               doc_embedding[i] = 1
-
-      bow_embeddings.append(doc_embedding)
-   return bow_embeddings
-
-
 def convert_embeddings_to_svm_format(embeddings, doc_class):
    """
       embeddings: a list of vectors
@@ -39,6 +22,11 @@ def convert_embeddings_to_svm_format(embeddings, doc_class):
    for embedding in embeddings:
       embedding_formatted = (doc_class, [])
       for idx, feature_value in enumerate(embedding):
+         
+         # Make sure that the number of occurences does not influence the embedding
+         if feature_value > 1:
+            feature_value = 1
+
          embedding_formatted[1].append((idx, feature_value))
 
       embeddings_formatted.append(embedding_formatted)
@@ -63,7 +51,6 @@ def preprocess_data(train_pos_path, train_neg_path, stopwords, VAL_CATEGORY, TES
 
    # Files that will be used for training
    train_files = pos_train + neg_train
-   print(len(train_files))
 
    # Generate n-grams for embeddings
    vocab, docs_tokenized = data_preprocessing.generate_embeddings_generic(1, 2, train_files)
