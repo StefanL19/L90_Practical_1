@@ -1,15 +1,10 @@
-from sklearn import svm
+from sklearn import svm, linear_model
 import pandas as pd
 from tqdm import tqdm
 import metrics
 import numpy as np
-
-# def prepare_embeddings(row):
-# 	features = eval( "%s" % row[1] )
-# 	representation = []
-# 	for feat in features:
-# 		representation.append(feat[1])
-# 	return representation
+import math
+from sklearn.externals import joblib
 
 def load_split(pos_path, neg_path):
 	pos = np.loadtxt(pos_path)
@@ -19,66 +14,47 @@ def load_split(pos_path, neg_path):
 
 	return X, Y
 
-############################## Training Process ###########################################
-X_train, Y_train = load_split("data/svm_bow/2/train/pos_train_val_2_test_0.csv", "data/svm_bow/2/train/neg_train_val_2_test_0.csv")
+def train_and_validate(train_paths, val_paths):
+	############################## Training Process ###########################################
+	X_train, Y_train = load_split(train_paths[0], train_paths[1])
 
-clf = svm.SVC(gamma='scale', verbose=True)
-clf.fit(X_train, Y_train)
+	print("Started Training")
+	clf = svm.SVC(gamma='scale', verbose=False)
+	clf.fit(X_train, Y_train)
+	joblib.dump(clf, 'data/model_repo/svm_test.pkl')
 
-# ############################## Validation Process ###########################################
-# print("Preparing validation documents")
-# df_pos_validation_data = pd.read_csv('data/test_svm_bow_data/pos_val_val_1_test_0.csv')
-# df_neg_validation_data = pd.read_csv('data/test_svm_bow_data/neg_val_val_1_test_0.csv')
+	# ############################## Validation Process ###########################################
+	print("Preparing validation documents")
+	X_val, Y_val = load_split(val_paths[0], val_paths[1])
 
-# pos_val = []
-# for index, row in tqdm(df_pos_validation_data.iterrows()):
-# 	pos_val.append(prepare_embeddings(row))
+	predictions = clf.predict(X_val)
+	
+	val_accuracy = metrics.acc(predictions, Y_val)
+	
+	return val_accuracy
 
-# pos_val_labels  = [1]*len(pos_val)
+fold_val_acc = []
+for val_split in range(1,10):
+	print("Started iterating Fold: {}".format(val_split))
+	pos_train_path = "data/svm_doc2vec/{}/train/pos_train_val_{}_test_0.csv".format(val_split, val_split)
+	neg_train_path = "data/svm_doc2vec/{}/train/neg_train_val_{}_test_0.csv".format(val_split, val_split)
 
-# neg_val = []
-# for index, row in tqdm(df_neg_validation_data.iterrows()):
-# 	neg_val.append(prepare_embeddings(row))
+	pos_val_path = "data/svm_doc2vec/{}/val/pos_val_val_{}_test_0.csv".format(val_split, val_split)
+	neg_val_path = "data/svm_doc2vec/{}/val/neg_val_val_{}_test_0.csv".format(val_split, val_split)
 
-# neg_val_labels  = [0]*len(neg_val)
+	train_paths = (pos_train_path, neg_train_path)
+	val_paths = (pos_val_path, neg_val_path)
 
-# validation = pos_val+neg_val
-# validation_labels = pos_val_labels + neg_val_labels
-# print(validation_labels)
+	val_accuracy = train_and_validate(train_paths, val_paths)
+	print(val_accuracy)
+	fold_val_acc.append(val_accuracy)
 
-# predictions = clf.predict(validation)
-# print(metrics.acc(predictions, validation_labels))
+all_acc = sum(fold_val_acc)/9.
+
+print("The overall accuracy is: ", all_acc)
+
+print("The mean is: ", np.mean(fold_val_acc))
+print("The variance is: ", math.sqrt(np.mean(abs(fold_val_acc - np.mean(fold_val_acc))**2)))
 
 
-# # # print(train)
-# # train a model based on the data
-# model = svmlight.learn(train, type='classification', verbosity=3)
 
-# del train
-# del df_pos_training_data
-# del df_neg_training_data
-
-# df_pos_validation_data = pd.read_csv('data/test_svm_bow_data/pos_val_val_1_test_0.csv')
-# df_neg_validation_data = pd.read_csv('data/test_svm_bow_data/neg_val_val_1_test_0.csv')
-
-# print("Preparing validation documents")
-# pos_val = []
-# for index, row in tqdm(df_pos_validation_data[:10].iterrows()):
-# 	features = eval( "%s" % row[1] )
-# 	train_sample = (0, features)
-# 	pos_val.append(train_sample)
-
-# neg_val = []
-# for index, row in tqdm(df_neg_validation_data[:10].iterrows()):
-# 	features = eval( "%s" % row[1] )
-# 	train_sample = (0, features)
-# 	neg_val.append(train_sample)
-
-# validation = pos_val + neg_val
-
-# # # classify the test data. this function returns a list of numbers, which represent
-# # # the classifications.
-# predictions = svmlight.classify(model, validation)
-# print(predictions)
-# for p in predictions:
-#     print '%.8f' % p

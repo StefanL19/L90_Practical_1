@@ -54,7 +54,7 @@ def save_embeddings(pos, pos_path, neg, neg_path):
    np.savetxt(neg_path, neg_bound)
 
 def preprocess_data(train_pos_path, train_neg_path, stopwords, VAL_CATEGORY, TEST_CATEGORY):
-   general_path = "data/svm_bow/"+str(val_cat)+"/"
+   general_path = "data/svm_bow/"+str(VAL_CATEGORY)+"/"
 
    import os
    if not os.path.exists(general_path+"train/"):
@@ -152,10 +152,10 @@ train_neg_path = "data/data-tagged/NEG/"
 stopwords = ["\n"]
 
 # Define Validation and Test Categories
-VAL_CATEGORY = 1
+#VAL_CATEGORY = 1
 TEST_CATEGORY = 0
 
-for val_cat in range(2,10):
+for val_cat in range(1,10):
    print("Working on validation category ", val_cat)
    preprocess_data(train_pos_path, train_neg_path, stopwords, val_cat, TEST_CATEGORY)
 
