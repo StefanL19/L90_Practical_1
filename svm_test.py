@@ -29,7 +29,7 @@ def train_all(train_paths, val_paths):
 
 	X_all = np.vstack((X_train, X_val))
 	Y_all = np.hstack((Y_train, Y_val))
-
+	#same fn
 	print("Started Training")
 	clf = svm.SVC(gamma='scale', C=1., verbose=False)
 	clf.fit(X_all, Y_all)
