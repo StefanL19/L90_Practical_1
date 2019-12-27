@@ -8,8 +8,8 @@ import codecs
 import smart_open 
 import re
 import gensim
-from gensim.models.callbacks import CallbackAny2Vec
-from gensim.test.utils import get_tmpfile
+# from gensim.models.callbacks import CallbackAny2Vec
+# from gensim.test.utils import get_tmpfile
 from gensim.models.doc2vec import LabeledSentence
 from tqdm import tqdm
 
@@ -124,30 +124,30 @@ def train_proper():
 
     model.save('data/imdb.d2v')
 
-class EpochLogger(CallbackAny2Vec):
-     '''Callback to log information about training'''
+# class EpochLogger(CallbackAny2Vec):
+#      '''Callback to log information about training'''
 
-     def __init__(self):
-         self.epoch = 0
+#      def __init__(self):
+#          self.epoch = 0
 
-     def on_epoch_begin(self, model):
-         print("Epoch #{} start".format(self.epoch))
+#      def on_epoch_begin(self, model):
+#          print("Epoch #{} start".format(self.epoch))
 
-     def on_epoch_end(self, model):
-         print("Epoch #{} end".format(self.epoch))
-         self.epoch += 1
+#      def on_epoch_end(self, model):
+#          print("Epoch #{} end".format(self.epoch))
+#          self.epoch += 1
         
-class EpochSaver(CallbackAny2Vec):
-	'''Callback to save model after each epoch.'''
+# class EpochSaver(CallbackAny2Vec):
+# 	'''Callback to save model after each epoch.'''
 
-	def __init__(self, path_prefix):
-	 self.path_prefix = path_prefix
-	 self.epoch = 0
+# 	def __init__(self, path_prefix):
+# 	 self.path_prefix = path_prefix
+# 	 self.epoch = 0
 
-	def on_epoch_end(self, model):
-	 output_path = 'data/doc2vec_models/{}_epoch{}.model'.format(self.path_prefix, self.epoch)
-	 model.save(output_path)
-	 self.epoch += 1
+# 	def on_epoch_end(self, model):
+# 	 output_path = 'data/doc2vec_models/{}_epoch{}.model'.format(self.path_prefix, self.epoch)
+# 	 model.save(output_path)
+# 	 self.epoch += 1
 
 def train_model():
     alldocs = []
@@ -167,17 +167,19 @@ def train_model():
     doc_list = alldocs[:]  
     shuffle(doc_list)
 
-    cores = multiprocessing.cpu_count() - 1
+    cores = multiprocessing.cpu_count() - 30
 
-    model = Doc2Vec(dm=0, vector_size=100, negative=5, window=10, hs=0, min_count=2, sample=1e-5, 
-                epochs=20, workers=cores)
+    pretrained_emb = "data/w2v_c_f.txt"
+    # model = Doc2Vec(dm=0, vector_size=100, negative=5, window=10, hs=0, min_count=2, sample=1e-5, 
+    #             epochs=20, pretrained_emb=pretrained_emb, workers=cores)
+    model = Doc2Vec(size=100, window=10, min_count=2, sample=1e-5, workers=cores, hs=0, dm=0, negative=5, pretrained_emb=pretrained_emb, iter=20)
 
     model.build_vocab(alldocs)
-    epoch_logger = EpochLogger()
-    epoch_saver = EpochSaver(path_prefix="init_model")
+    # epoch_logger = EpochLogger()
+    # epoch_saver = EpochSaver(path_prefix="init_model")
 
-    model.train(doc_list, total_examples=len(doc_list), epochs=model.epochs, callbacks=[epoch_logger])
-    model.save("data/doc2vec_models/doc2vec_imdb.d2v")
+    model.train(doc_list, total_examples=len(doc_list))
+    model.save("data/doc2vec_models/counterfitted_doc2vec_imdb.d2v")
 
 def use_model(model_path, docs):
     infer_epoch=20
