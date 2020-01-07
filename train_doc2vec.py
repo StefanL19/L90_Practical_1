@@ -8,8 +8,8 @@ import codecs
 import smart_open 
 import re
 import gensim
-# from gensim.models.callbacks import CallbackAny2Vec
-# from gensim.test.utils import get_tmpfile
+from gensim.models.callbacks import CallbackAny2Vec
+from gensim.test.utils import get_tmpfile
 from gensim.models.doc2vec import LabeledSentence
 from tqdm import tqdm
 
@@ -33,34 +33,34 @@ from tqdm import tqdm
 #     return norm_text
 
 # def prepare_docs():
-# 	folders = ['train/pos', 'train/neg', 'test/pos', 'test/neg', 'train/unsup']
+#   folders = ['train/pos', 'train/neg', 'test/pos', 'test/neg', 'train/unsup']
 
-# 	for fol in folders:
-# 	        temp = u''
-# 	        newline = "\n".encode("utf-8")
-# 	        output = fol.replace('/', '-') + '.txt'
-# 	        # Is there a better pattern to use?
-# 	        txt_files = glob.glob(os.path.join(dirname, fol, '*.txt'))
-# 	        print(" %s: %i files" % (fol, len(txt_files)))
-# 	        with smart_open(os.path.join(dirname, output), "wb") as n:
-# 	            for i, txt in enumerate(txt_files):
-# 	                with smart_open(txt, "rb") as t:
-# 	                    one_text = t.read().decode("utf-8")
-# 	                    for c in control_chars:
-# 	                        one_text = one_text.replace(c, ' ')
-# 	                    one_text = normalize_text(one_text)
-# 	                    all_lines.append(one_text)
-# 	                    n.write(one_text.encode("utf-8"))
-# 	                    n.write(newline)
+#   for fol in folders:
+#           temp = u''
+#           newline = "\n".encode("utf-8")
+#           output = fol.replace('/', '-') + '.txt'
+#           # Is there a better pattern to use?
+#           txt_files = glob.glob(os.path.join(dirname, fol, '*.txt'))
+#           print(" %s: %i files" % (fol, len(txt_files)))
+#           with smart_open(os.path.join(dirname, output), "wb") as n:
+#               for i, txt in enumerate(txt_files):
+#                   with smart_open(txt, "rb") as t:
+#                       one_text = t.read().decode("utf-8")
+#                       for c in control_chars:
+#                           one_text = one_text.replace(c, ' ')
+#                       one_text = normalize_text(one_text)
+#                       all_lines.append(one_text)
+#                       n.write(one_text.encode("utf-8"))
+#                       n.write(newline)
 
-# 	# Save to disk for instant re-use on any future runs
-# 	with smart_open(os.path.join(dirname, 'alldata-id.txt'), 'wb') as f:
-# 	    for idx, line in enumerate(all_lines):
-# 	        num_line = u"_*{0} {1}\n".format(idx, line)
-# 	        f.write(num_line.encode("utf-8"))
+#   # Save to disk for instant re-use on any future runs
+#   with smart_open(os.path.join(dirname, 'alldata-id.txt'), 'wb') as f:
+#       for idx, line in enumerate(all_lines):
+#           num_line = u"_*{0} {1}\n".format(idx, line)
+#           f.write(num_line.encode("utf-8"))
 
-# 	assert os.path.isfile("data/aclImdb/alldata-id.txt"), "alldata-id.txt unavailable"
-# 	print("Success, alldata-id.txt is available for next steps.")
+#   assert os.path.isfile("data/aclImdb/alldata-id.txt"), "alldata-id.txt unavailable"
+#   print("Success, alldata-id.txt is available for next steps.")
 
 # import gensim
 from gensim.models.doc2vec import TaggedDocument
@@ -124,30 +124,30 @@ def train_proper():
 
     model.save('data/imdb.d2v')
 
-# class EpochLogger(CallbackAny2Vec):
-#      '''Callback to log information about training'''
+class EpochLogger(CallbackAny2Vec):
+     '''Callback to log information about training'''
 
-#      def __init__(self):
-#          self.epoch = 0
+     def __init__(self):
+         self.epoch = 0
 
-#      def on_epoch_begin(self, model):
-#          print("Epoch #{} start".format(self.epoch))
+     def on_epoch_begin(self, model):
+         print("Epoch #{} start".format(self.epoch))
 
-#      def on_epoch_end(self, model):
-#          print("Epoch #{} end".format(self.epoch))
-#          self.epoch += 1
+     def on_epoch_end(self, model):
+         print("Epoch #{} end".format(self.epoch))
+         self.epoch += 1
         
-# class EpochSaver(CallbackAny2Vec):
-# 	'''Callback to save model after each epoch.'''
+class EpochSaver(CallbackAny2Vec):
+    '''Callback to save model after each epoch.'''
 
-# 	def __init__(self, path_prefix):
-# 	 self.path_prefix = path_prefix
-# 	 self.epoch = 0
+    def __init__(self, path_prefix):
+     self.path_prefix = path_prefix
+     self.epoch = 0
 
-# 	def on_epoch_end(self, model):
-# 	 output_path = 'data/doc2vec_models/{}_epoch{}.model'.format(self.path_prefix, self.epoch)
-# 	 model.save(output_path)
-# 	 self.epoch += 1
+    def on_epoch_end(self, model):
+     output_path = 'data/doc2vec_models/{}_epoch{}.model'.format(self.path_prefix, self.epoch)
+     model.save(output_path)
+     self.epoch += 1
 
 def train_model():
     alldocs = []
@@ -160,26 +160,21 @@ def train_model():
             alldocs.append(TaggedDocument(words=words, tags=tags))
 
     print("All docs that will be used for training are: ", len(alldocs))
-    max_epochs = 100
-    vec_size = 100
-    alpha = 0.025
 
     doc_list = alldocs[:]  
     shuffle(doc_list)
 
-    cores = multiprocessing.cpu_count() - 30
+    cores = multiprocessing.cpu_count() - 1
 
-    pretrained_emb = "data/w2v_c_f.txt"
-    # model = Doc2Vec(dm=0, vector_size=100, negative=5, window=10, hs=0, min_count=2, sample=1e-5, 
-    #             epochs=20, pretrained_emb=pretrained_emb, workers=cores)
-    model = Doc2Vec(size=100, window=10, min_count=2, sample=1e-5, workers=cores, hs=0, dm=0, negative=5, pretrained_emb=pretrained_emb, iter=20)
+    model = Doc2Vec(dm=0, vector_size=100, negative=5, window=10, hs=0, min_count=1, sample=1e-5, 
+                epochs=30, workers=cores, alpha=0.025, alpha_min=0.0001)
 
     model.build_vocab(alldocs)
-    # epoch_logger = EpochLogger()
-    # epoch_saver = EpochSaver(path_prefix="init_model")
+    epoch_logger = EpochLogger()
+    epoch_saver = EpochSaver(path_prefix="init_model")
 
-    model.train(doc_list, total_examples=len(doc_list))
-    model.save("data/doc2vec_models/counterfitted_doc2vec_imdb.d2v")
+    model.train(doc_list, total_examples=len(doc_list), epochs=model.epochs, callbacks=[epoch_logger])
+    model.save("data/doc2vec_models/baseline_window_10.d2v")
 
 def use_model(model_path, docs):
     infer_epoch=20
@@ -188,6 +183,8 @@ def use_model(model_path, docs):
     inferred_vectors = []
     for doc in tqdm(docs):
         doc = [w.lower() for w in doc]
+        print(doc)
+        #doc = [w.lower() for w in doc if (w in positive_lexicon) or (w in negative_lexicon)]
         vector = model.infer_vector(doc, alpha=0.01, min_alpha=0.0001, steps=infer_epoch)
         inferred_vectors.append(vector)
 
