@@ -32,7 +32,7 @@ def train_all(train_paths, val_paths):
 	#same fn
 	print("Started Training")
 	#clf = svm.SVC(gamma='scale', kernel="rbf", C=2., verbose=False, probability=True)
-	clf = svm.SVC(gamma='scale', kernel="rbf", C=1., verbose=False)
+	clf = svm.SVC(gamma='scale', kernel="linear", C=0.02, degree=2, verbose=False)
 	clf.fit(X_all, Y_all)
 	joblib.dump(clf, 'data/model_repo/svm_test.pkl')
 	
@@ -40,19 +40,19 @@ def train_all(train_paths, val_paths):
 
 # trained_model_path = "data/model_repo/svm_test.pkl"
 
-pos_train_path = "data/svm_bow//1/train/pos_train_val_1_test_0.csv"
-neg_train_path = "data/svm_bow/1/train/neg_train_val_1_test_0.csv"
+pos_train_path = "data/svm_doc2vec/1/train/pos_train_val_1_test_0.csv"
+neg_train_path = "data/svm_doc2vec/1/train/neg_train_val_1_test_0.csv"
 
-pos_val_path = "data/svm_bow/1/val/pos_val_val_1_test_0.csv"
-neg_val_path = "data/svm_bow/1/val/neg_val_val_1_test_0.csv"
+pos_val_path = "data/svm_doc2vec/1/val/pos_val_val_1_test_0.csv"
+neg_val_path = "data/svm_doc2vec/1/val/neg_val_val_1_test_0.csv"
 
 train_paths = (pos_train_path, neg_train_path)
 val_paths = (pos_val_path, neg_val_path)
 
 clf = train_all(train_paths, val_paths)
 
-test_set_pos_path = "data/svm_bow/1/test/pos_test_val_1_test_0.csv"
-test_set_neg_path = "data/svm_bow/1/test/neg_test_val_1_test_0.csv"
+test_set_pos_path = "data/svm_doc2vec/1/test/pos_test_val_1_test_0.csv"
+test_set_neg_path = "data/svm_doc2vec/1/test/neg_test_val_1_test_0.csv"
 
 X_test, Y_test = load_split(test_set_pos_path, test_set_neg_path)
 # clf = joblib.load(trained_model_path)

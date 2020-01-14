@@ -2,6 +2,30 @@
 The code for the practical for the L90 course
 
 # Files and organization
+### Train a Doc2Vec Model
+Use the train_model function in the file train_doc2vec.py
+
+### Prepare Doc2Vec embeddings for SVM
+Use the file prepare_doc2vec_data_svm.py
+
+### Prepare BoW features for SVM
+Use the file preprocesss_BoW_data_svm.py
+
+### Train an SVM model
+Use the file svm_light_train.py and set the appropriate data paths there
+
+### Test an SVM model on the blind test set
+Use the file svm_test.py
+
+### Export mistakes for manual error analysis
+Use the file svm_error_analysis.py
+
+### Test a Doc2Vec model on the Triplet Accuracy and 'Perfect' Triplet Accuracy Metrics
+Use the file test_doc2vec.py
+
+### Permutation Test
+Use the file permutation_test.py and pass the appropriate data paths
+
 ### Train  a Naive Bayes classifier on cv000-cv899 and test on cv900-cv999
 Use the file train_nb_no_fold.py and set the Laplace parameter to False 
 

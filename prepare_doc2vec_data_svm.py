@@ -94,7 +94,7 @@ stopwords = ["\n"]
 
 # Define Validation and Test Categories
 TEST_CATEGORY = 0
-MODEL_PATH = "data/doc2vec_models/final_10.d2v"
+MODEL_PATH = "data/doc2vec_models/baseline_hm.d2v"
 for val_cat in range(1,10):
    print("Working on validation category ", val_cat)
    preprocess_data(train_pos_path, train_neg_path, stopwords, MODEL_PATH, val_cat, TEST_CATEGORY)
